@@ -1,13 +1,12 @@
 FROM python:3.11-slim
 
-# Install Trivy - using direct binary installation
+# Install Trivy from the official apt repository
 RUN apt-get update && \
-    apt-get install -y wget tar && \
-    wget -qO trivy.tar.gz https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz && \
-    tar zxvf trivy.tar.gz && \
-    mv trivy /usr/local/bin/ && \
-    rm trivy.tar.gz && \
-    chmod +x /usr/local/bin/trivy && \
+    apt-get install -y --no-install-recommends wget gnupg ca-certificates && \
+    wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor -o /usr/share/keyrings/trivy.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" > /etc/apt/sources.list.d/trivy.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends trivy && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
