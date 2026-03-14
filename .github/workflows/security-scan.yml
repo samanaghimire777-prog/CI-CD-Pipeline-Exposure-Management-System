@@ -1,0 +1,133 @@
+name: CI/CD Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Backend Docker Image
+      run: |
+        cd backend
+        docker build -t security-dashboard-backend:${{ github.sha }} .
+        docker tag security-dashboard-backend:${{ github.sha }} security-dashboard-backend:latest
+
+    - name: Install Trivy
+      run: |
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install trivy
+
+    - name: Run Trivy Scan on Backend Image
+      run: |
+        trivy image --format json --output trivy-results.json security-dashboard-backend:latest
+        trivy image --format table security-dashboard-backend:latest
+
+    - name: Upload Trivy Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: trivy-scan-results
+        path: trivy-results.json
+        retention-days: 30
+
+    - name: Check for Critical Vulnerabilities
+      run: |
+        CRITICAL_COUNT=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        HIGH_COUNT=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+        
+        echo "Critical vulnerabilities: $CRITICAL_COUNT"
+        echo "High vulnerabilities: $HIGH_COUNT"
+        
+        if [ "$CRITICAL_COUNT" -gt 10 ]; then
+          echo "::warning::Found $CRITICAL_COUNT critical vulnerabilities"
+        fi
+
+    - name: Generate Scan Summary
+      if: always()
+      run: |
+        echo "## 🔒 Security Scan Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Image:** security-dashboard-backend:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Scan Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        CRITICAL=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        HIGH=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+        MEDIUM=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length')
+        LOW=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="LOW")] | length')
+        
+        echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🟠 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🟡 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🟢 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+
+    # Optional: Post results to API endpoint if backend is hosted
+    # - name: Post Scan Results to Dashboard
+    #   if: success()
+    #   env:
+    #     DASHBOARD_API_URL: ${{ secrets.DASHBOARD_API_URL }}
+    #     DASHBOARD_API_KEY: ${{ secrets.DASHBOARD_API_KEY }}
+    #   run: |
+    #     curl -X POST "$DASHBOARD_API_URL/scan" \
+    #       -H "Authorization: Bearer $DASHBOARD_API_KEY" \
+    #       -H "Content-Type: application/json" \
+    #       -d @trivy-results.json
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: frontend/dist
+        retention-days: 7
