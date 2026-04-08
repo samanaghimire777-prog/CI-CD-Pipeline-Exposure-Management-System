@@ -1,22 +1,34 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { logoutUser } from '../api';
 
-const Sidebar = () => {
+const Sidebar = ({ user, onLogout }) => {
   const navItems = [
-    { path: '/', name: 'Dashboard', icon: '📊' },
-    { path: '/scanner', name: 'Scanner', icon: '🔍' },
-    { path: '/vulnerabilities', name: 'Vulnerabilities', icon: '🛡️' },
-    { path: '/history', name: 'Scan History', icon: '📜' },
+    { path: '/', name: 'Dashboard' },
+    { path: '/scanner', name: 'Pre-built Image Scanner' },
+    { path: '/local-scanner', name: 'Local Image Scanner' },
+    { path: '/vulnerabilities', name: 'Vulnerabilities' },
+    { path: '/history', name: 'Scan History' },
   ];
+
+  const displayName = user?.name || user?.email?.split('@')[0] || '';
+  const avatarLetter = displayName ? displayName[0].toUpperCase() : '?';
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } finally {
+      if (onLogout) {
+        onLogout();
+      }
+    }
+  };
 
   return (
     <div className="w-64 min-h-screen flex flex-col" style={{ backgroundColor: '#FFC0CB' }}>
       {/* Logo/Header */}
       <div className="p-6 border-b" style={{ borderColor: '#FFB6C1' }}>
-        <h1 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
-          <span>🔒</span>
-          <span>SecDash</span>
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800">Docker Image Scanner</h1>
         <p className="text-sm text-gray-700 mt-1">Security Dashboard</p>
       </div>
 
@@ -36,7 +48,6 @@ const Sidebar = () => {
                   }`
                 }
               >
-                <span className="text-xl">{item.icon}</span>
                 <span className="font-medium">{item.name}</span>
               </NavLink>
             </li>
@@ -50,7 +61,43 @@ const Sidebar = () => {
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
           <span>System Active</span>
         </div>
-        <p className="text-xs text-gray-600 mt-2">
+
+        {user ? (
+          <div className="mt-3 bg-white/50 border border-pink-300 rounded-lg p-3">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-pink-600 text-white text-sm font-semibold flex items-center justify-center">
+                {avatarLetter}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
+                <p className="text-xs text-gray-700 truncate">{user.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="mt-3 w-full text-sm px-3 py-1.5 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Link
+              to="/login"
+              className="text-center text-sm px-3 py-1.5 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              className="text-center text-sm px-3 py-1.5 rounded-md bg-white text-gray-900 border border-pink-300 hover:bg-pink-100 transition"
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-600 mt-3">
           Powered by Trivy & FastAPI
         </p>
       </div>

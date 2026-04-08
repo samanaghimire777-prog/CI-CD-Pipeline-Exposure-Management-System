@@ -1,27 +1,75 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ScanForm from '../components/ScanForm';
+import { downloadScanReport } from '../api';
 
-const Scanner = () => {
-  const navigate = useNavigate();
+const Scanner = ({ alertEmail = null }) => {
   const [lastScan, setLastScan] = useState(null);
+  const [reportLoading, setReportLoading] = useState({ pdf: false, excel: false });
+  const [reportError, setReportError] = useState('');
 
   const handleScanComplete = (result) => {
     setLastScan(result);
+    setReportError('');
+  };
+
+  const handleDownload = async (format) => {
+    if (!lastScan?.scan_id) {
+      return;
+    }
+
+    setReportError('');
+    setReportLoading((prev) => ({ ...prev, [format]: true }));
+    try {
+      await downloadScanReport(lastScan.scan_id, format);
+    } catch (err) {
+      setReportError(err?.response?.data?.detail || 'Failed to download report.');
+    } finally {
+      setReportLoading((prev) => ({ ...prev, [format]: false }));
+    }
   };
 
   return (
     <div className="p-6">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Docker Image Scanner</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Pre-built Image Scanner</h1>
         <p className="text-gray-600 mt-1">Scan Docker images for security vulnerabilities using Trivy</p>
       </div>
 
       {/* Scan Form */}
       <div className="max-w-4xl">
-        <ScanForm onScanComplete={handleScanComplete} />
+        <ScanForm onScanComplete={handleScanComplete} alertEmail={alertEmail} />
       </div>
+
+      {lastScan && (
+        <div className="mt-6 max-w-4xl bg-white rounded-lg shadow p-6 border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">Download Pre-built Image Scanner Report</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Generate report for scan ID {lastScan.scan_id} ({lastScan.image_name}).
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              onClick={() => handleDownload('pdf')}
+              disabled={reportLoading.pdf}
+              className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:bg-gray-400 transition"
+            >
+              {reportLoading.pdf ? 'Generating PDF...' : 'Download PDF'}
+            </button>
+            <button
+              onClick={() => handleDownload('excel')}
+              disabled={reportLoading.excel}
+              className="px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:bg-gray-400 transition"
+            >
+              {reportLoading.excel ? 'Generating Excel...' : 'Download Excel'}
+            </button>
+          </div>
+
+          {reportError && (
+            <p className="mt-3 text-sm text-red-700">{reportError}</p>
+          )}
+        </div>
+      )}
 
       {/* Popular Images */}
       <div className="mt-8 max-w-4xl">

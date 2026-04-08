@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { scanImage } from '../api';
 
-const ScanForm = ({ onScanComplete }) => {
+const ScanForm = ({ onScanComplete, alertEmail = null }) => {
   const [imageName, setImageName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,10 +14,18 @@ const ScanForm = ({ onScanComplete }) => {
     setSuccess(null);
 
     try {
-      const result = await scanImage(imageName);
-      setSuccess(`Scan completed! Found ${result.total_vulnerabilities} vulnerabilities.`);
+      const result = await scanImage(imageName, alertEmail);
+      let successMessage = `Scan completed! Found ${result.total_vulnerabilities} vulnerabilities.`;
+
+      if (result.alert_sent) {
+        successMessage += ' Alert sent: VULNERABILITY DETECTED.';
+      } else if (result.alert_error) {
+        successMessage += ` Alert could not be sent: ${result.alert_error}`;
+      }
+
+      setSuccess(successMessage);
       setImageName('');
-      onScanComplete();
+      onScanComplete(result);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to scan image. Please try again.');
     } finally {

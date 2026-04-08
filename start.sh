@@ -16,11 +16,20 @@ cleanup() {
 
 trap cleanup SIGINT SIGTERM
 
+# Ensure stale listeners do not force Vite to switch from 3000 to 3001.
+lsof -ti:3000 | xargs kill -9 2>/dev/null
+lsof -ti:8000 | xargs kill -9 2>/dev/null
+pkill -f "npm run dev" 2>/dev/null
+pkill -f "vite" 2>/dev/null
+pkill -f "uvicorn main:app" 2>/dev/null
+
+# Give the OS a brief moment to release sockets.
+sleep 1
+
 # Start backend
 echo "Starting backend on http://localhost:8000..."
 cd backend
-source venv/bin/activate
-python main.py &
+"$PWD/../.venv/bin/python" -m uvicorn main:app --host 127.0.0.1 --port 8000 --app-dir "$PWD" &
 BACKEND_PID=$!
 cd ..
 
