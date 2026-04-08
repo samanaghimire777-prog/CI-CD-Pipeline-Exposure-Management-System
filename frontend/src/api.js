@@ -97,8 +97,17 @@ export const fetchVulnerabilities = async (severity = null, limit = 100) => {
   return response.data;
 };
 
-export const fetchScans = async (limit = 20) => {
-  const response = await api.get('/scans', { params: { limit } });
+export const fetchScans = async (limit = 20, scanId = null) => {
+  const params = { limit };
+  if (scanId !== null && scanId !== '') {
+    params.scan_id = Number(scanId);
+  }
+  const response = await api.get('/scans', { params });
+  return response.data;
+};
+
+export const fetchScanById = async (scanId) => {
+  const response = await api.get(`/scans/${scanId}`);
   return response.data;
 };
 

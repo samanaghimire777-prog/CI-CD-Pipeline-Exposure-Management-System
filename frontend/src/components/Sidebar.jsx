@@ -9,6 +9,7 @@ const Sidebar = ({ user, onLogout }) => {
     { path: '/local-scanner', name: 'Local Image Scanner' },
     { path: '/vulnerabilities', name: 'Vulnerabilities' },
     { path: '/history', name: 'Scan History' },
+    { path: '/scan-lookup', name: 'Scan Lookup' },
   ];
 
   const displayName = user?.name || user?.email?.split('@')[0] || '';

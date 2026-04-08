@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Scanner from './pages/Scanner';
 import Vulnerabilities from './pages/Vulnerabilities';
 import ScanHistory from './pages/ScanHistory';
+import ScanLookup from './pages/ScanLookup';
 import LocalDockerScanner from './pages/LocalDockerScanner';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -66,6 +67,7 @@ const AppShell = () => {
           <Route path="/local-scanner" element={<LocalDockerScanner alertEmail={user?.email || null} />} />
           <Route path="/vulnerabilities" element={<Vulnerabilities />} />
           <Route path="/history" element={<ScanHistory />} />
+          <Route path="/scan-lookup" element={<ScanLookup />} />
           <Route path="/login" element={<Login onAuthSuccess={setUser} />} />
           <Route path="/signup" element={<Signup onAuthSuccess={setUser} />} />
           <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />

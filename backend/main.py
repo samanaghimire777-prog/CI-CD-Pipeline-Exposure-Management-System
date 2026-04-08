@@ -1178,20 +1178,27 @@ async def get_results(severity: Optional[str] = None, limit: int = 100):
 
 
 @app.get("/scans")
-async def get_scans(limit: int = 20):
+async def get_scans(limit: int = 20, scan_id: Optional[int] = None):
     """
-    Get scan history
+    Get scan history, optionally filtered by scan ID.
     """
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        
-        cursor.execute("""
-            SELECT * FROM scans 
-            ORDER BY scan_date DESC 
-            LIMIT ?
-        """, (limit,))
+
+        if scan_id is not None:
+            cursor.execute("""
+                SELECT * FROM scans
+                WHERE id = ?
+                ORDER BY scan_date DESC
+            """, (scan_id,))
+        else:
+            cursor.execute("""
+                SELECT * FROM scans
+                ORDER BY scan_date DESC
+                LIMIT ?
+            """, (limit,))
         
         scans = [dict(row) for row in cursor.fetchall()]
         conn.close()
@@ -1202,6 +1209,28 @@ async def get_scans(limit: int = 20):
             "scans": scans
         }
         
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@app.get("/scans/{scan_id}")
+async def get_scan_details(scan_id: int):
+    """
+    Get one scan and all associated vulnerabilities.
+    """
+    try:
+        scan, vulnerabilities = fetch_scan_with_vulnerabilities(scan_id)
+        if not scan:
+            raise HTTPException(status_code=404, detail=f"Scan not found: {scan_id}")
+
+        return {
+            "success": True,
+            "scan": scan,
+            "count": len(vulnerabilities),
+            "vulnerabilities": vulnerabilities,
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
