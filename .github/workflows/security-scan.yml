@@ -42,13 +42,13 @@ jobs:
 
     - name: Run Trivy Scan on Backend Image
       run: |
-        trivy image --format json --output trivy-backend-results.json security-dashboard-backend:latest
-        trivy image --format table security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --format json --output trivy-backend-results.json security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --format table security-dashboard-backend:latest
 
     - name: Run Trivy Scan on Frontend Image
       run: |
-        trivy image --format json --output trivy-frontend-results.json security-dashboard-frontend:latest
-        trivy image --format table security-dashboard-frontend:latest
+        trivy image --ignorefile .trivyignore --format json --output trivy-frontend-results.json security-dashboard-frontend:latest
+        trivy image --ignorefile .trivyignore --format table security-dashboard-frontend:latest
 
     - name: Upload Trivy Results
       uses: actions/upload-artifact@v4
@@ -77,8 +77,8 @@ jobs:
 
     - name: Enforce Failure on HIGH/CRITICAL Vulnerabilities
       run: |
-        trivy image --severity HIGH,CRITICAL --exit-code 1 security-dashboard-backend:latest
-        trivy image --severity HIGH,CRITICAL --exit-code 1 security-dashboard-frontend:latest
+        trivy image --ignorefile .trivyignore --severity HIGH,CRITICAL --exit-code 1 security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --severity HIGH,CRITICAL --exit-code 1 security-dashboard-frontend:latest
 
     - name: Generate Scan Summary
       if: always()
