@@ -26,7 +26,7 @@ const Sidebar = ({ user, onLogout }) => {
   };
 
   return (
-    <div className="w-64 min-h-screen flex flex-col" style={{ backgroundColor: '#FFC0CB' }}>
+    <div className="w-64 h-screen shrink-0 flex flex-col sticky top-0 overflow-hidden" style={{ backgroundColor: '#FFC0CB' }}>
       {/* Logo/Header */}
       <div className="p-6 border-b" style={{ borderColor: '#FFB6C1' }}>
         <h1 className="text-2xl font-bold text-gray-800">Docker Image Scanner</h1>
@@ -34,7 +34,7 @@ const Sidebar = ({ user, onLogout }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-hidden">
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.path}>
@@ -97,10 +97,6 @@ const Sidebar = ({ user, onLogout }) => {
             </Link>
           </div>
         )}
-
-        <p className="text-xs text-gray-600 mt-3">
-          Powered by Trivy & FastAPI
-        </p>
       </div>
     </div>
   );

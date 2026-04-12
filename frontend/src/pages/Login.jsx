@@ -28,7 +28,7 @@ const Login = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 flex items-start justify-center p-4 pt-16">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-sm p-6">
         <h1 className="text-2xl font-bold text-gray-900">Login</h1>
         <p className="text-sm text-gray-600 mt-1">Sign in with the same email or username you used at signup.</p>
