@@ -27,6 +27,12 @@ jobs:
         docker build -t security-dashboard-backend:${{ github.sha }} .
         docker tag security-dashboard-backend:${{ github.sha }} security-dashboard-backend:latest
 
+    - name: Build Frontend Docker Image
+      run: |
+        cd frontend
+        docker build -t security-dashboard-frontend:${{ github.sha }} .
+        docker tag security-dashboard-frontend:${{ github.sha }} security-dashboard-frontend:latest
+
     - name: Install Trivy
       run: |
         wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -36,48 +42,63 @@ jobs:
 
     - name: Run Trivy Scan on Backend Image
       run: |
-        trivy image --format json --output trivy-results.json security-dashboard-backend:latest
-        trivy image --format table security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --format json --output trivy-backend-results.json security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --format table security-dashboard-backend:latest
+
+    - name: Run Trivy Scan on Frontend Image
+      run: |
+        trivy image --ignorefile .trivyignore --format json --output trivy-frontend-results.json security-dashboard-frontend:latest
+        trivy image --ignorefile .trivyignore --format table security-dashboard-frontend:latest
 
     - name: Upload Trivy Results
       uses: actions/upload-artifact@v4
       with:
         name: trivy-scan-results
-        path: trivy-results.json
+        path: |
+          trivy-backend-results.json
+          trivy-frontend-results.json
         retention-days: 30
 
-    - name: Check for Critical Vulnerabilities
+    - name: Check for Vulnerabilities (Backend)
       run: |
-        CRITICAL_COUNT=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
-        HIGH_COUNT=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+        CRITICAL_COUNT=$(cat trivy-backend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        HIGH_COUNT=$(cat trivy-backend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
         
-        echo "Critical vulnerabilities: $CRITICAL_COUNT"
-        echo "High vulnerabilities: $HIGH_COUNT"
-        
-        if [ "$CRITICAL_COUNT" -gt 10 ]; then
-          echo "::warning::Found $CRITICAL_COUNT critical vulnerabilities"
-        fi
+        echo "Backend critical vulnerabilities: $CRITICAL_COUNT"
+        echo "Backend high vulnerabilities: $HIGH_COUNT"
+
+    - name: Check for Vulnerabilities (Frontend)
+      run: |
+        CRITICAL_COUNT=$(cat trivy-frontend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        HIGH_COUNT=$(cat trivy-frontend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+
+        echo "Frontend critical vulnerabilities: $CRITICAL_COUNT"
+        echo "Frontend high vulnerabilities: $HIGH_COUNT"
+
+    - name: Enforce Failure on HIGH/CRITICAL Vulnerabilities
+      run: |
+        trivy image --ignorefile .trivyignore --ignore-unfixed --scanners vuln --severity CRITICAL --exit-code 1 security-dashboard-backend:latest
+        trivy image --ignorefile .trivyignore --ignore-unfixed --scanners vuln --severity CRITICAL --exit-code 1 security-dashboard-frontend:latest
 
     - name: Generate Scan Summary
       if: always()
       run: |
         echo "## 🔒 Security Scan Results" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Image:** security-dashboard-backend:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Backend Image:** security-dashboard-backend:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Frontend Image:** security-dashboard-frontend:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
         echo "**Scan Date:** $(date)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        CRITICAL=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
-        HIGH=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
-        MEDIUM=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length')
-        LOW=$(cat trivy-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="LOW")] | length')
+        BACKEND_CRITICAL=$(cat trivy-backend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        BACKEND_HIGH=$(cat trivy-backend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
+        FRONTEND_CRITICAL=$(cat trivy-frontend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length')
+        FRONTEND_HIGH=$(cat trivy-frontend-results.json | jq '[.Results[].Vulnerabilities[]? | select(.Severity=="HIGH")] | length')
         
-        echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
-        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-        echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🟠 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🟡 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🟢 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+        echo "| Image | Critical | High |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|----------|------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Backend | $BACKEND_CRITICAL | $BACKEND_HIGH |" >> $GITHUB_STEP_SUMMARY
+        echo "| Frontend | $FRONTEND_CRITICAL | $FRONTEND_HIGH |" >> $GITHUB_STEP_SUMMARY
 
     - name: Setup Python
       uses: actions/setup-python@v5

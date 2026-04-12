@@ -49,29 +49,37 @@ const Dashboard = () => {
       {stats && <StatsCards stats={stats} />}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Severity Distribution Chart */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
+        {/* Local Severity Distribution Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Vulnerability Distribution
+            Local Docker Image Vulnerability Distribution
           </h2>
-          {stats && <SeverityChart data={stats.severity_distribution} />}
+          {stats && <SeverityChart data={stats.local_severity_distribution || {}} />}
         </div>
 
-        {/* Timeline Chart */}
+        {/* Remote Severity Distribution Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Scan History Timeline
+            Docker Image Vulnerability Distribution
           </h2>
-          {stats && <TimelineChart scans={stats.recent_scans} />}
+          {stats && <SeverityChart data={stats.remote_severity_distribution || {}} />}
         </div>
+      </div>
+
+      {/* Timeline Chart */}
+      <div className="mt-6 bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          Scan History Timeline
+        </h2>
+        {stats && <TimelineChart scans={stats.recent_scans || []} heightClass="h-[28rem]" />}
       </div>
 
       {/* Quick Actions */}
       <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h3 className="font-semibold text-blue-900 mb-2">Quick Actions</h3>
         <p className="text-sm text-blue-700">
-          Use the <strong>Scanner</strong> page to scan new Docker images or view detailed vulnerability information.
+          Use the <strong>Pre-built Image Scanner</strong> page to scan new Docker images or view detailed vulnerability information.
         </p>
       </div>
     </div>

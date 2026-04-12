@@ -23,7 +23,7 @@ ChartJS.register(
   Filler
 );
 
-const TimelineChart = ({ scans }) => {
+const TimelineChart = ({ scans, heightClass = 'h-64' }) => {
   // Reverse to show chronological order
   const reversedScans = [...scans].reverse();
 
@@ -97,8 +97,10 @@ const TimelineChart = ({ scans }) => {
       },
       x: {
         ticks: {
-          maxRotation: 45,
-          minRotation: 45
+          maxRotation: 30,
+          minRotation: 30,
+          autoSkip: true,
+          maxTicksLimit: 10
         }
       }
     },
@@ -106,14 +108,14 @@ const TimelineChart = ({ scans }) => {
 
   if (scans.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center text-gray-500">
+      <div className={`${heightClass} flex items-center justify-center text-gray-500`}>
         No scan history available
       </div>
     );
   }
 
   return (
-    <div className="h-64">
+    <div className={heightClass}>
       <Line data={chartData} options={options} />
     </div>
   );

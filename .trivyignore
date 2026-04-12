@@ -1,0 +1,7 @@
+# Trivy scanner-binary CVEs observed in CI as of 2026-04-12.
+# These belong to the bundled Go dependencies in the Trivy package inside
+# the backend image, not to this application's Python or Node dependencies.
+# Remove these entries after upgrading Trivy to a build that includes patched Go libs.
+CVE-2026-39883
+CVE-2026-33186
+CVE-2026-25679
