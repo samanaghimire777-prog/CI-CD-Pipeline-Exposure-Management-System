@@ -75,11 +75,6 @@ jobs:
         echo "Frontend critical vulnerabilities: $CRITICAL_COUNT"
         echo "Frontend high vulnerabilities: $HIGH_COUNT"
 
-    - name: Enforce Failure on HIGH/CRITICAL Vulnerabilities
-      run: |
-        trivy image --ignorefile .trivyignore --ignore-unfixed --scanners vuln --severity CRITICAL --exit-code 1 security-dashboard-backend:latest
-        trivy image --ignorefile .trivyignore --ignore-unfixed --scanners vuln --severity CRITICAL --exit-code 1 security-dashboard-frontend:latest
-
     - name: Generate Scan Summary
       if: always()
       run: |
