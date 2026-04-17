@@ -4,6 +4,7 @@ A comprehensive security vulnerability scanning dashboard that scans Docker imag
 
 ## 📋 Table of Contents
 
+- [Use Case Diagram](#use-case-diagram)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
@@ -15,6 +16,31 @@ A comprehensive security vulnerability scanning dashboard that scans Docker imag
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [License](#license)
+
+## 🗺️ Use Case Diagram
+
+The full use case diagram (PlantUML source) is located at [`docs/use-case-diagram.puml`](docs/use-case-diagram.puml).
+
+You can render it with any PlantUML-compatible tool (e.g. the [PlantUML online server](https://www.plantuml.com/plantuml/uml/), the VS Code PlantUML extension, or IntelliJ IDEA).
+
+### Actors
+
+| Actor | Role |
+|---|---|
+| **User / Developer** | Registers, logs in, triggers scans, views results & reports |
+| **GitHub Actions (CI/CD System)** | Automates builds, scheduled scans, artifact storage & critical-vuln detection |
+| **Trivy (Scanner)** | External tool that performs the actual vulnerability analysis |
+| **Slack (Notifications)** | Receives alerts when CRITICAL vulnerabilities are detected |
+
+### Use Case Summary
+
+| Package | Use Cases |
+|---|---|
+| Authentication | Register, Log In, Log Out, View Current User |
+| Dashboard | View Security Dashboard, View Statistics, View Scan Timeline |
+| Vulnerability Scanning | Scan Remote Image, Scan Local Image, List Local Images, Monitor Docker Events |
+| Results & Reporting | View Results, Filter by Severity, View Scan History, Lookup Scan, Export Report (PDF/Excel) |
+| CI/CD Automation | Trigger Automated Scan, Build & Push Images, Store Artifacts, Detect Critical Vulnerabilities |
 
 ## ✨ Features
 

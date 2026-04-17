@@ -1,0 +1,157 @@
+@startuml CI/CD Pipeline Exposure Management System - Use Case Diagram
+
+' ─────────────────────────────────────────────────────────────
+' Styling
+' ─────────────────────────────────────────────────────────────
+skinparam backgroundColor #FAFAFA
+skinparam ActorBorderColor #2C3E50
+skinparam ActorBackgroundColor #ECF0F1
+skinparam ActorFontSize 13
+skinparam UsecaseBorderColor #2980B9
+skinparam UsecaseBackgroundColor #EBF5FB
+skinparam UsecaseFontSize 12
+skinparam ArrowColor #555555
+skinparam PackageBorderColor #2C3E50
+skinparam PackageBackgroundColor #FDFEFE
+skinparam NoteBackgroundColor #FFFDE7
+skinparam NoteBorderColor #F9A825
+
+title CI/CD Pipeline Exposure Management System\nUse Case Diagram
+
+' ─────────────────────────────────────────────────────────────
+' Actors
+' ─────────────────────────────────────────────────────────────
+actor "User / Developer" as User
+actor "GitHub Actions\n(CI/CD System)" as CICD
+actor "Trivy\n(Scanner)" as Trivy
+actor "Slack\n(Notifications)" as Slack
+
+' ─────────────────────────────────────────────────────────────
+' System boundary
+' ─────────────────────────────────────────────────────────────
+rectangle "CI/CD Pipeline Exposure Management System" {
+
+    ' ── Authentication ──────────────────────────────────────
+    package "Authentication" {
+        usecase "Register / Sign Up"      as UC_Signup
+        usecase "Log In"                  as UC_Login
+        usecase "Log Out"                 as UC_Logout
+        usecase "View Current User"       as UC_Me
+    }
+
+    ' ── Dashboard ───────────────────────────────────────────
+    package "Dashboard" {
+        usecase "View Security Dashboard" as UC_Dashboard
+        usecase "View Statistics\n& Severity Distribution" as UC_Stats
+        usecase "View Scan Timeline"      as UC_Timeline
+    }
+
+    ' ── Scanning ────────────────────────────────────────────
+    package "Vulnerability Scanning" {
+        usecase "Scan Remote\nDocker Image"  as UC_ScanRemote
+        usecase "Scan Local\nDocker Image"   as UC_ScanLocal
+        usecase "List Local\nDocker Images"  as UC_ListImages
+        usecase "Monitor Docker\nEvents (live)" as UC_DockerEvents
+        usecase "Perform Vulnerability\nAnalysis (Trivy)" as UC_Trivy
+        usecase "Send Critical Alert\n(Email / Slack)" as UC_Alert
+    }
+
+    ' ── Results & Reporting ─────────────────────────────────
+    package "Results & Reporting" {
+        usecase "View Vulnerability\nResults"       as UC_Results
+        usecase "Filter Vulnerabilities\nby Severity" as UC_Filter
+        usecase "View Scan History"                  as UC_History
+        usecase "Lookup Specific Scan"               as UC_Lookup
+        usecase "Export Report\n(PDF / Excel)"       as UC_Export
+    }
+
+    ' ── CI/CD Automation ────────────────────────────────────
+    package "CI/CD Automation" {
+        usecase "Trigger Automated\nSecurity Scan"  as UC_AutoScan
+        usecase "Build & Push\nDocker Images"       as UC_Build
+        usecase "Store Scan\nArtifacts"             as UC_Artifacts
+        usecase "Detect Critical\nVulnerabilities"  as UC_Detect
+    }
+
+}
+
+' ─────────────────────────────────────────────────────────────
+' User associations
+' ─────────────────────────────────────────────────────────────
+User --> UC_Signup
+User --> UC_Login
+User --> UC_Logout
+User --> UC_Me
+
+User --> UC_Dashboard
+User --> UC_Stats
+User --> UC_Timeline
+
+User --> UC_ScanRemote
+User --> UC_ScanLocal
+User --> UC_ListImages
+User --> UC_DockerEvents
+
+User --> UC_Results
+User --> UC_Filter
+User --> UC_History
+User --> UC_Lookup
+User --> UC_Export
+
+' ─────────────────────────────────────────────────────────────
+' CI/CD System associations
+' ─────────────────────────────────────────────────────────────
+CICD --> UC_AutoScan
+CICD --> UC_Build
+CICD --> UC_Artifacts
+CICD --> UC_Detect
+
+' ─────────────────────────────────────────────────────────────
+' Trivy (external scanner)
+' ─────────────────────────────────────────────────────────────
+UC_ScanRemote ..> UC_Trivy   : <<include>>
+UC_ScanLocal  ..> UC_Trivy   : <<include>>
+UC_AutoScan   ..> UC_Trivy   : <<include>>
+Trivy --> UC_Trivy
+
+' ─────────────────────────────────────────────────────────────
+' Alert / notification extends
+' ─────────────────────────────────────────────────────────────
+UC_ScanRemote ..> UC_Alert   : <<extend>>\n[critical found]
+UC_ScanLocal  ..> UC_Alert   : <<extend>>\n[critical found]
+UC_AutoScan   ..> UC_Detect  : <<include>>
+UC_Detect     ..> UC_Alert   : <<extend>>\n[critical found]
+Slack --> UC_Alert
+
+' ─────────────────────────────────────────────────────────────
+' Filter is included by Results
+' ─────────────────────────────────────────────────────────────
+UC_Results ..> UC_Filter : <<extend>>
+
+' ─────────────────────────────────────────────────────────────
+' Notes
+' ─────────────────────────────────────────────────────────────
+note right of UC_ScanRemote
+  Accepts any public Docker image
+  (e.g. nginx:latest, ubuntu:20.04)
+end note
+
+note right of UC_ScanLocal
+  Scans images already present
+  on the local Docker daemon
+end note
+
+note bottom of UC_Alert
+  Alert sent via Slack webhook
+  and/or user-provided e-mail
+  when CRITICAL severity is found
+end note
+
+note right of UC_AutoScan
+  Triggered on: push to main/develop,
+  pull_request to main,
+  daily schedule (02:00 UTC),
+  or manual workflow_dispatch
+end note
+
+@enduml
