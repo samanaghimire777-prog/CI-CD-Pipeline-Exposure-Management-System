@@ -27,20 +27,23 @@ You can render it with any PlantUML-compatible tool (e.g. the [PlantUML online s
 
 | Actor | Role |
 |---|---|
-| **User / Developer** | Registers, logs in, triggers scans, views results & reports |
+| **User / Developer** | Registers, logs in, triggers scans, views & downloads results/reports |
 | **GitHub Actions (CI/CD System)** | Automates builds, scheduled scans, artifact storage & critical-vuln detection |
 | **Trivy (Scanner)** | External tool that performs the actual vulnerability analysis |
-| **Slack (Notifications)** | Receives alerts when CRITICAL vulnerabilities are detected |
+| **Slack (Notifications)** | Receives critical-vulnerability alerts (webhook primary, bot-token fallback) |
 
 ### Use Case Summary
 
 | Package | Use Cases |
 |---|---|
-| Authentication | Register, Log In, Log Out, View Current User |
-| Dashboard | View Security Dashboard, View Statistics, View Scan Timeline |
-| Vulnerability Scanning | Scan Remote Image, Scan Local Image, List Local Images, Monitor Docker Events |
-| Results & Reporting | View Results, Filter by Severity, View Scan History, Lookup Scan, Export Report (PDF/Excel) |
-| CI/CD Automation | Trigger Automated Scan, Build & Push Images, Store Artifacts, Detect Critical Vulnerabilities |
+| Authentication | Register, Log In, Log Out, View Current User & Profile |
+| Dashboard | View Security Dashboard, View Statistics & Severity Distribution, View Scan Timeline |
+| Pre-built Image Scanner | Scan Remote Docker Image, Choose from Popular Images, Receive Critical Alert, Download Report (PDF/Excel) |
+| Local Image Scanner | List Local Docker Images, Scan Local Docker Image, Enable Auto-Scan New Images, Monitor Live Docker Events (SSE), View Auto-Scan History, Receive Critical Alert, Download Report (PDF/Excel) |
+| Vulnerability Analysis | Perform Trivy Vulnerability Scan, Parse & Store Scan Results, Tag Scan Source (remote/local) |
+| Alerting | Send Slack Alert via Webhook, Send Slack Alert via Bot Token (fallback) |
+| Results & Reporting | View All Vulnerabilities, Filter by Severity, View Scan History, Lookup Scan by ID, Download Report (PDF/Excel) |
+| CI/CD Automation | Trigger Automated Security Scan, Build & Push Docker Images, Store Scan Artifacts, Detect Critical Vulnerabilities |
 
 ## ✨ Features
 
