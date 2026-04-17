@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const AUTH_TOKEN_KEY = 'auth_token';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,56 +8,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
-export const getAuthToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
-
-export const setAuthToken = (token) => {
-  if (!token) {
-    return;
-  }
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
-};
-
-export const clearAuthToken = () => {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-};
-
-api.interceptors.request.use((config) => {
-  const token = getAuthToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export const signupUser = async (email, password) => {
-  const response = await api.post('/auth/signup', { email, password });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
-  }
-  return response.data;
-};
-
-export const loginUser = async (email, password) => {
-  const response = await api.post('/auth/login', { email, password });
-  if (response.data?.token) {
-    setAuthToken(response.data.token);
-  }
-  return response.data;
-};
-
-export const logoutUser = async () => {
-  try {
-    await api.post('/auth/logout');
-  } finally {
-    clearAuthToken();
-  }
-};
-
-export const fetchCurrentUser = async () => {
-  const response = await api.get('/auth/me');
-  return response.data;
-};
 
 export const scanImage = async (imageName, alertEmail = null) => {
   const payload = { image_name: imageName };

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
@@ -11,11 +11,9 @@ import os
 import asyncio
 import time
 from io import BytesIO
-import secrets
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
-from passlib.context import CryptContext
 from dotenv import load_dotenv
 
 from openpyxl import Workbook
@@ -42,7 +40,6 @@ app.add_middleware(
 # Database initialization
 configured_db_path = os.getenv("DATABASE_PATH", "vulnerabilities.db")
 DATABASE_PATH = configured_db_path if os.path.isabs(configured_db_path) else os.path.join(BASE_DIR, configured_db_path)
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 TRIVY_TIMEOUT_SECONDS = int(os.getenv("TRIVY_TIMEOUT", "300"))
 TRIVY_SKIP_DB_UPDATE = os.getenv("TRIVY_SKIP_DB_UPDATE", "true").strip().lower() in {"1", "true", "yes"}
 
@@ -108,16 +105,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS auth_tokens (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            token TEXT NOT NULL UNIQUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    """)
     
     conn.commit()
     conn.close()
@@ -130,16 +117,6 @@ init_db()
 class ScanRequest(BaseModel):
     image_name: str
     alert_email: Optional[str] = None
-
-
-class SignupRequest(BaseModel):
-    email: str
-    password: str
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
 
 
 class VulnerabilityResponse(BaseModel):
@@ -173,62 +150,10 @@ def is_valid_email(email: str):
     return "@" in normalized and "." in normalized.split("@")[-1]
 
 
-def hash_password(password: str):
-    return pwd_context.hash(password)
-
-
-def verify_password(plain_password: str, password_hash: str):
-    return pwd_context.verify(plain_password, password_hash)
-
-
-def create_auth_token(conn: sqlite3.Connection, user_id: int):
-    token = secrets.token_urlsafe(32)
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO auth_tokens (user_id, token) VALUES (?, ?)",
-        (user_id, token)
-    )
-    return token
-
-
-def get_user_from_authorization_header(authorization: Optional[str]):
-    if not authorization:
-        return None
-
-    parts = authorization.split(" ", 1)
-    if len(parts) != 2 or parts[0].lower() != "bearer":
-        return None
-
-    token = parts[1].strip()
-    if not token:
-        return None
-
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT u.id, u.email
-        FROM auth_tokens t
-        JOIN users u ON u.id = t.user_id
-        WHERE t.token = ?
-    """, (token,))
-    user = cursor.fetchone()
-    conn.close()
-
-    if not user:
-        return None
-
-    return dict(user)
-
-
-def resolve_alert_email(request_email: Optional[str], authorization: Optional[str]):
+def resolve_alert_email(request_email: Optional[str]):
     if request_email:
         normalized = normalize_email(request_email)
         return normalized if is_valid_email(normalized) else None
-
-    user = get_user_from_authorization_header(authorization)
-    if user:
-        return normalize_email(user["email"])
 
     return None
 
@@ -652,126 +577,8 @@ def read_root():
     return {"message": "CI/CD Security Dashboard API", "version": "1.0"}
 
 
-@app.post("/auth/signup")
-async def signup(request: SignupRequest):
-    email = normalize_email(request.email)
-    password = request.password or ""
-
-    if not email:
-        raise HTTPException(status_code=400, detail="Please enter an email or username.")
-
-    if len(password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
-
-    conn = sqlite3.connect(DATABASE_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA busy_timeout = 10000")
-
-    user_id = None
-    token = None
-    try:
-        cursor.execute(
-            "INSERT INTO users (email, password_hash) VALUES (?, ?)",
-            (email, hash_password(password))
-        )
-        user_id = cursor.lastrowid
-        token = create_auth_token(conn, user_id)
-        conn.commit()
-    except sqlite3.IntegrityError:
-        raise HTTPException(status_code=409, detail="An account with this email already exists.")
-    except sqlite3.OperationalError:
-        conn.rollback()
-        raise HTTPException(status_code=503, detail="Database is busy. Please try signup again.")
-    finally:
-        conn.close()
-
-    return {
-        "success": True,
-        "token": token,
-        "user": {
-            "id": user_id,
-            "email": email,
-            "name": email.split("@")[0],
-        },
-    }
-
-
-@app.post("/auth/login")
-async def login(request: LoginRequest):
-    email = normalize_email(request.email)
-    password = request.password or ""
-
-    conn = sqlite3.connect(DATABASE_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA busy_timeout = 10000")
-
-    try:
-        cursor.execute("SELECT id, email, password_hash FROM users WHERE email = ?", (email,))
-        user = cursor.fetchone()
-        if not user or not verify_password(password, user["password_hash"]):
-            raise HTTPException(status_code=401, detail="Invalid email or password.")
-
-        token = create_auth_token(conn, user["id"])
-        conn.commit()
-    except sqlite3.OperationalError:
-        conn.rollback()
-        raise HTTPException(status_code=503, detail="Database is busy. Please try login again.")
-    finally:
-        conn.close()
-
-    return {
-        "success": True,
-        "token": token,
-        "user": {
-            "id": user["id"],
-            "email": user["email"],
-            "name": user["email"].split("@")[0],
-        },
-    }
-
-
-@app.get("/auth/me")
-async def me(authorization: Optional[str] = Header(default=None)):
-    user = get_user_from_authorization_header(authorization)
-    if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    return {
-        "success": True,
-        "user": {
-            "id": user["id"],
-            "email": user["email"],
-            "name": user["email"].split("@")[0],
-        },
-    }
-
-
-@app.post("/auth/logout")
-async def logout(authorization: Optional[str] = Header(default=None)):
-    if not authorization:
-        return {"success": True}
-
-    parts = authorization.split(" ", 1)
-    if len(parts) != 2 or parts[0].lower() != "bearer":
-        return {"success": True}
-
-    token = parts[1].strip()
-    if not token:
-        return {"success": True}
-
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM auth_tokens WHERE token = ?", (token,))
-    conn.commit()
-    conn.close()
-
-    return {"success": True}
-
-
 @app.post("/scan")
-async def scan_image(request: ScanRequest, authorization: Optional[str] = Header(default=None)):
+async def scan_image(request: ScanRequest):
     """
     Scan a Docker image using Trivy and store results in SQLite
     """
@@ -879,7 +686,7 @@ async def scan_image(request: ScanRequest, authorization: Optional[str] = Header
         should_alert = severity_counts["CRITICAL"] > 0 or severity_counts["HIGH"] > 0
         alert_sent = False
         alert_error = None
-        alert_email = resolve_alert_email(request.alert_email, authorization)
+        alert_email = resolve_alert_email(request.alert_email)
 
         if should_alert:
             alert_sent, alert_error = send_vulnerability_alert_slack(
@@ -912,7 +719,7 @@ async def scan_image(request: ScanRequest, authorization: Optional[str] = Header
 
 
 @app.post("/scan/local")
-async def scan_local_image(request: ScanRequest, authorization: Optional[str] = Header(default=None)):
+async def scan_local_image(request: ScanRequest):
     """
     Scan a local Docker image using Trivy and store results in SQLite.
     This endpoint never pulls from a remote registry.
@@ -1006,7 +813,7 @@ async def scan_local_image(request: ScanRequest, authorization: Optional[str] = 
         should_alert = severity_counts["CRITICAL"] > 0 or severity_counts["HIGH"] > 0
         alert_sent = False
         alert_error = None
-        alert_email = resolve_alert_email(request.alert_email, authorization)
+        alert_email = resolve_alert_email(request.alert_email)
 
         if should_alert:
             alert_sent, alert_error = send_vulnerability_alert_slack(
