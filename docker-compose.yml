@@ -13,13 +13,13 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
     container_name: security-dashboard-frontend
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "3000:80"
     environment:
       - VITE_API_URL=http://localhost:8000
     depends_on:
