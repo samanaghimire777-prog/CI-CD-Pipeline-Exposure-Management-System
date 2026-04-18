@@ -1,6 +1,8 @@
+FROM docker:27-cli AS dockercli
+
 FROM python:3.11-slim
 
-# Install Trivy from the official apt repository
+# Install Trivy from the official apt repository.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget gnupg ca-certificates && \
     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor -o /usr/share/keyrings/trivy.gpg && \
@@ -9,6 +11,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends trivy && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Docker CLI is required for image pull/inspect operations in scan endpoints.
+COPY --from=dockercli /usr/local/bin/docker /usr/local/bin/docker
 
 WORKDIR /app
 

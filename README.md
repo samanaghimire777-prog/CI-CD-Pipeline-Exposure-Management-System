@@ -481,10 +481,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [React](https://react.dev/) and [TailwindCSS](https://tailwindcss.com/) for the frontend
 - [Chart.js](https://www.chartjs.org/) for beautiful charts
 
-## 📞 Support
-
-For support, please open an issue in the GitHub repository or contact the maintainer.
-
 ---
 
-**Note:** This is an interim phase project for educational purposes. For production use, implement proper authentication, security measures, and error handling.
+**Note**: This is an interim phase project for educational purposes. For production use, implement proper authentication, security measures, and error handling.
+
+
+CI trigger test on 2026-04-18

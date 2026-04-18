@@ -1,4 +1,12 @@
 services:
+  trivy-db-init:
+    image: aquasec/trivy:latest
+    container_name: trivy-db-init
+    command: ["image", "--download-db-only", "--cache-dir", "/trivy-cache"]
+    volumes:
+      - trivy-cache:/trivy-cache
+    restart: "no"
+
   backend:
     build: ./backend
     container_name: security-dashboard-backend
@@ -8,9 +16,15 @@ services:
       - ./backend:/app
       - /var/run/docker.sock:/var/run/docker.sock
       - vulnerability-data:/app/data
+      - trivy-cache:/root/.cache/trivy
     environment:
       - PYTHONUNBUFFERED=1
+      - TRIVY_CACHE_DIR=/root/.cache/trivy
+      - DOCKER_HOST=unix:///var/run/docker.sock
     restart: unless-stopped
+    depends_on:
+      trivy-db-init:
+        condition: service_completed_successfully
 
   frontend:
     build: ./frontend
@@ -28,3 +42,4 @@ services:
 
 volumes:
   vulnerability-data:
+  trivy-cache:

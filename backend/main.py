@@ -42,11 +42,14 @@ configured_db_path = os.getenv("DATABASE_PATH", "vulnerabilities.db")
 DATABASE_PATH = configured_db_path if os.path.isabs(configured_db_path) else os.path.join(BASE_DIR, configured_db_path)
 TRIVY_TIMEOUT_SECONDS = int(os.getenv("TRIVY_TIMEOUT", "300"))
 TRIVY_SKIP_DB_UPDATE = os.getenv("TRIVY_SKIP_DB_UPDATE", "true").strip().lower() in {"1", "true", "yes"}
+TRIVY_CACHE_DIR = (os.getenv("TRIVY_CACHE_DIR") or "").strip()
+DOCKER_HOST = (os.getenv("DOCKER_HOST") or "unix:///var/run/docker.sock").strip()
 
 
 @app.on_event("startup")
 async def log_startup_context():
     print(f"[startup] Using SQLite database: {DATABASE_PATH}")
+    print(f"[startup] Docker host: {DOCKER_HOST}")
     slack_webhook = (os.getenv("SLACK_WEBHOOK_URL") or "").strip()
     slack_bot_token = (os.getenv("SLACK_BOT_TOKEN") or "").strip()
     slack_channel_id = (os.getenv("SLACK_CHANNEL_ID") or "").strip()
@@ -264,6 +267,9 @@ def build_trivy_scan_command(image_reference: str, skip_db_update: bool):
         "--quiet",
     ]
 
+    if TRIVY_CACHE_DIR:
+        cmd.extend(["--cache-dir", TRIVY_CACHE_DIR])
+
     if skip_db_update:
         # Fast mode for repeat scans; fallback retry without these flags happens on failure.
         cmd.extend(["--skip-db-update", "--skip-java-db-update"])
@@ -272,25 +278,40 @@ def build_trivy_scan_command(image_reference: str, skip_db_update: bool):
     return cmd
 
 
+def get_subprocess_env():
+    env = os.environ.copy()
+    env["DOCKER_HOST"] = DOCKER_HOST
+    return env
+
+
 def run_trivy_scan(image_reference: str):
     initial_cmd = build_trivy_scan_command(image_reference, TRIVY_SKIP_DB_UPDATE)
     result = subprocess.run(
         initial_cmd,
         capture_output=True,
         text=True,
-        timeout=TRIVY_TIMEOUT_SECONDS
+        timeout=TRIVY_TIMEOUT_SECONDS,
+        env=get_subprocess_env(),
     )
 
     if result.returncode == 0 or not TRIVY_SKIP_DB_UPDATE:
         return result
 
-    # If fast mode fails (often first run without local DB), retry with DB update enabled.
+    stderr_output = (result.stderr or "").lower()
+    first_run_db_error = "cannot be specified on the first run" in stderr_output
+    db_metadata_error = "database error" in stderr_output
+
+    # Retry once without skip flags when cache metadata is not initialized yet.
+    if not (first_run_db_error or db_metadata_error):
+        return result
+
     fallback_cmd = build_trivy_scan_command(image_reference, skip_db_update=False)
     return subprocess.run(
         fallback_cmd,
         capture_output=True,
         text=True,
-        timeout=TRIVY_TIMEOUT_SECONDS
+        timeout=TRIVY_TIMEOUT_SECONDS,
+        env=get_subprocess_env(),
     )
 
 
@@ -300,7 +321,8 @@ def get_local_docker_images():
         ["docker", "image", "ls", "--format", "{{json .}}"],
         capture_output=True,
         text=True,
-        timeout=30
+        timeout=30,
+        env=get_subprocess_env(),
     )
 
     if result.returncode != 0:
@@ -338,7 +360,8 @@ def resolve_local_image_reference(image_name: str):
         ["docker", "image", "inspect", image_name],
         capture_output=True,
         text=True,
-        timeout=30
+        timeout=30,
+        env=get_subprocess_env(),
     )
 
     if inspect_result.returncode == 0:
@@ -349,7 +372,8 @@ def resolve_local_image_reference(image_name: str):
         ["docker", "image", "ls", "--no-trunc", "--format", "{{.Repository}}:{{.Tag}} {{.ID}}"],
         capture_output=True,
         text=True,
-        timeout=30
+        timeout=30,
+        env=get_subprocess_env(),
     )
 
     if list_result.returncode == 0:
@@ -596,7 +620,8 @@ async def scan_image(request: ScanRequest):
                 ["docker", "pull", image_name],
                 capture_output=True,
                 text=True,
-                timeout=TRIVY_TIMEOUT_SECONDS
+                timeout=TRIVY_TIMEOUT_SECONDS,
+                env=get_subprocess_env(),
             )
 
             if pull_result.returncode != 0:
