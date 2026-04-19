@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CI/CD Pipeline Exposure Management System — System Flowchart
+  Import into draw.io / diagrams.net:
+    File → Open from → Device → select this file
+  Or paste XML via  Extras → Edit Diagram
+-->
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1"
+              tooltips="1" connect="1" arrows="1" fold="1"
+              page="1" pageScale="1" pageWidth="1654" pageHeight="1169"
+              math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- ══════════════════════════════════════════════════════
+         LEGEND (top-right)
+    ══════════════════════════════════════════════════════ -->
+    <mxCell id="leg0" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="40" width="180" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg1" value="Actor / External" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="70" width="160" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg2" value="Frontend (React)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="106" width="160" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg3" value="Backend (FastAPI)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="142" width="160" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg4" value="Scan / Host Tools" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="178" width="160" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg5" value="Database / Storage" style="shape=cylinder3;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="214" width="160" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg6" value="CI/CD (GitHub Actions)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="258" width="160" height="28" as="geometry"/>
+    </mxCell>
+    <mxCell id="leg7" value="Decision" style="rhombus;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1440" y="294" width="120" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         PATH A — USER SCAN  (left column)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- Developer -->
+    <mxCell id="A0" value="Developer" style="ellipse;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="40" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Opens browser -->
+    <mxCell id="A1" value="Open Dashboard&#xa;(browser :3000)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="60" y="130" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA0A1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A0" target="A1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Choose scan type -->
+    <mxCell id="A2" value="Choose scan type?" style="rhombus;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="70" y="220" width="140" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA1A2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A1" target="A2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Remote image scan -->
+    <mxCell id="A3" value="Remote Image Scan&#xa;(enter image name)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="240" y="216" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA2A3" value="remote" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A2" target="A3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Local image scan -->
+    <mxCell id="A4" value="Local Docker Scan&#xa;(select image)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="240" y="280" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA2A4" value="local" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A2" target="A4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- View history -->
+    <mxCell id="A5" value="View Scan History&#xa;/ Lookup" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="-140" y="216" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA2A5" value="history" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A2" target="A5" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Download report -->
+    <mxCell id="A6" value="Download PDF&#xa;or Excel Report" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="-140" y="280" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA2A6" value="report" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A2" target="A6" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         BACKEND API  (centre column)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- POST /scan -->
+    <mxCell id="B1" value="POST /scan&#xa;or POST /scan/local" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="480" y="216" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA3B1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A3" target="B1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA4B1" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A4" target="B1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- GET /history -->
+    <mxCell id="B3" value="GET /history&#xa;or /vulnerabilities" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="480" y="130" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA5B3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A5" target="B3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- GET /report -->
+    <mxCell id="B4" value="GET /report/pdf&#xa;or /report/excel" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="480" y="40" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA6B4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A6" target="B4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Scan Engine -->
+    <mxCell id="B2" value="Scan Engine&#xa;(run_trivy_scan)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="480" y="310" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eB1B2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="B1" target="B2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Report Generator -->
+    <mxCell id="B4gen" value="Report Generator&#xa;(PDF / Excel)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="700" y="40" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eB4gen" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="B4" target="B4gen" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         SCAN EXECUTION  (centre-right)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- Trivy Binary -->
+    <mxCell id="C1" value="Trivy Binary" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="700" y="310" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eB2C1" value="spawn subprocess" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="B2" target="C1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Docker Socket -->
+    <mxCell id="C2" value="Docker Socket&#xa;/var/run/docker.sock" style="shape=cylinder3;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="700" y="400" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="eC1C2" value="inspect image" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="C1" target="C2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Trivy Advisory DB -->
+    <mxCell id="C3" value="Trivy Advisory DB" style="shape=cylinder3;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="700" y="490" width="140" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="eC1C3" value="fetch CVE data" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="C1" target="C3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Docker Hub -->
+    <mxCell id="C4" value="Docker Hub" style="ellipse;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="880" y="400" width="130" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="eC2C4" value="pull if remote" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="C2" target="C4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         RESULT HANDLING
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- SQLite DB -->
+    <mxCell id="D1" value="SQLite DB&#xa;(vulnerabilities.db)" style="shape=cylinder3;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="480" y="430" width="160" height="56" as="geometry"/>
+    </mxCell>
+    <mxCell id="eC1D1" value="JSON results" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="C1" target="D1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eB3D1" value="SELECT" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="B3" target="D1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eB4genD1" value="query data" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="B4gen" target="D1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Critical vulns? decision -->
+    <mxCell id="D2" value="Critical vulns&#xa;found?" style="rhombus;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="490" y="530" width="140" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD1D2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="D1" target="D2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Slack Alert -->
+    <mxCell id="D3" value="Send Slack Alert" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="680" y="543" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD2D3" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="D2" target="D3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Slack API -->
+    <mxCell id="SL" value="Slack API" style="ellipse;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="880" y="543" width="120" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD3SL" value="POST webhook" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="D3" target="SL" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Return results to UI -->
+    <mxCell id="D4" value="Return results to UI" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="490" y="640" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD2D4" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="D2" target="D4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD3D4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="D3" target="D4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- SSE live push -->
+    <mxCell id="D5" value="SSE Live Push&#xa;to Browser" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="80" y="640" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD4D5" value="auto-refresh" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="D4" target="D5" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eD5A1" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="D5" target="A1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         PATH B — CI/CD PIPELINE  (bottom)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- GitHub Repo -->
+    <mxCell id="GH" value="GitHub Repository" style="ellipse;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="340" y="800" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="eA0GH" value="git push / PR" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="A0" target="GH" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Checkout -->
+    <mxCell id="E1" value="1. Checkout Code" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="80" y="900" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eGHE1" value="trigger" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="GH" target="E1" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Build images -->
+    <mxCell id="E2" value="2. Build Backend&#xa;&amp; Frontend Images" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="260" y="900" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE1E2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E1" target="E2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Trivy scan (CI) -->
+    <mxCell id="E3" value="3. Run Trivy Scan" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="460" y="900" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE2E3" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E2" target="E3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE3C3" value="fetch advisories" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="E3" target="C3" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Upload artifacts -->
+    <mxCell id="E4" value="4. Upload&#xa;Scan Artifacts" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="640" y="900" width="140" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE3E4" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E3" target="E4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Vuln check decision -->
+    <mxCell id="E5" value="CRITICAL or HIGH&#xa;vulns found?" style="rhombus;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="820" y="886" width="150" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE4E5" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E4" target="E5" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Fail job -->
+    <mxCell id="E6" value="Fail the Job" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1010" y="870" width="120" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE5E6" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E5" target="E6" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Pass + summary -->
+    <mxCell id="E7" value="Generate Summary&#xa;&amp; Pass" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1010" y="930" width="120" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eE5E7" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="E5" target="E7" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════════════════
+         PATH C — DOCKER AUTO-SCAN  (left-bottom)
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- Container started -->
+    <mxCell id="F1" value="New Container&#xa;Started on Host" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="-160" y="430" width="160" height="44" as="geometry"/>
+    </mxCell>
+
+    <!-- Docker Event Monitor -->
+    <mxCell id="F2" value="Docker Event Monitor&#xa;(detects start event)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="-160" y="520" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="eF1F2" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="F1" target="F2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eF2C2" value="listen via socket" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="F2" target="C2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eF2B2" value="auto-trigger scan" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="F2" target="B2" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="eF2D5" value="push SSE event" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="F2" target="D5" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
