@@ -1,0 +1,67 @@
+mindmap
+  root((🔒 CI/CD Security\nDashboard Project))
+
+    %%─────────────────────────────────────────
+    %% 1. WEBSITE / DASHBOARD  (what the user sees)
+    %%─────────────────────────────────────────
+    (🖥️ 1. Website\nDashboard)
+      [1.1 Scan Form\nType in an image name\nand hit the Scan button]
+      [1.2 Summary Cards\nShows total scans done\nand how many problems were found]
+      [1.3 Bar Chart\nVisual breakdown of problems\nby danger level]
+      [1.4 Timeline Chart\nShows how problems changed\nover time]
+      [1.5 Problem Table\nFull list of every issue found\nwith filters and page navigation]
+
+    %%─────────────────────────────────────────
+    %% 2. BACKEND / ENGINE  (the brains behind the scenes)
+    %%─────────────────────────────────────────
+    (⚙️ 2. Backend\nEngine)
+      [2.1 Receive Scan Request\nAccepts the image name\ntyped by the user]
+      [2.2 Run the Scanner\nCalls Trivy to check\nevery file in the image]
+      [2.3 Sort the Results\nLabels each problem as\nCRITICAL HIGH MEDIUM or LOW]
+      [2.4 Save to Database\nStores every finding so\nyou can look back later]
+      [2.5 Send Results Back\nReturns a clean summary\nto the dashboard]
+
+    %%─────────────────────────────────────────
+    %% 3. SECURITY SCANNER  (the expert that does the checking)
+    %%─────────────────────────────────────────
+    (🔍 3. Security\nScanner — Trivy)
+      [3.1 Download the Image\nFetches the Docker image\nfrom the internet if needed]
+      [3.2 Inspect Every Layer\nLooks inside all the files\nand software packages]
+      [3.3 Check Against Known Threats\nCompares findings against a global\nlist of known security problems]
+      [3.4 Produce a Report\nOutputs a structured list\nof everything it found]
+
+    %%─────────────────────────────────────────
+    %% 4. DATABASE  (the filing cabinet)
+    %%─────────────────────────────────────────
+    (🗄️ 4. Database\nStorage)
+      [4.1 Scan Log\nRecords when each scan\nwas done and which image]
+      [4.2 Vulnerability Records\nStores each problem found\nwith full details]
+      [4.3 Filter and Search\nLets you query results\nby image name or danger level]
+
+    %%─────────────────────────────────────────
+    %% 5. AUTOMATIC PIPELINE  (the robot that works while you sleep)
+    %%─────────────────────────────────────────
+    (🤖 5. Automatic\nPipeline — GitHub Actions)
+      [5.1 Triggered Automatically\nRuns on every code push\nor every night at 2 AM]
+      [5.2 Build the Docker Image\nPackages the backend app\ninto a container]
+      [5.3 Run Security Scan\nTrivy checks the freshly\nbuilt image automatically]
+      [5.4 Check for Critical Issues\nIf serious problems are found\nthe pipeline raises an alarm]
+      [5.5 Save Scan Artifacts\nStores the raw results\nin GitHub for reference]
+      [5.6 Build the Frontend\nCompiles the React website\nand checks for errors]
+
+    %%─────────────────────────────────────────
+    %% 6. ALERTS & NOTIFICATIONS  (how the team is told)
+    %%─────────────────────────────────────────
+    (🔔 6. Alerts &\nNotifications)
+      [6.1 GitHub Build Badge\nShows a green or red badge\non the repo homepage]
+      [6.2 Pipeline Failure Email\nGitHub emails the team\nwhen a build fails]
+      [6.3 Critical Issue Alert\nExtra warning raised when\nCRITICAL problems are detected]
+
+    %%─────────────────────────────────────────
+    %% 7. DEPLOYMENT  (how everything gets running)
+    %%─────────────────────────────────────────
+    (🚢 7. Deployment\nPackaging)
+      [7.1 Backend Container\nDockerfile wraps the Python\nAPI into a portable box]
+      [7.2 Frontend Container\nDockerfile wraps the React\nwebsite into a portable box]
+      [7.3 One-command Start\ndocker-compose up starts\nboth boxes together]
+      [7.4 Environment Settings\n.env files hold secrets like\nthe database path and API URL]
