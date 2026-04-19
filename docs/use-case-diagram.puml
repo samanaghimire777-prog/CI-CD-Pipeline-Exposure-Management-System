@@ -33,8 +33,6 @@ rectangle "CI/CD Pipeline Exposure Management System" {
 
     ' ── Authentication ──────────────────────────────────────
     package "Authentication" {
-        usecase "Register / Sign Up"      as UC_Signup
-        usecase "Log In"                  as UC_Login
         usecase "Log Out"                 as UC_Logout
         usecase "View Current User\n& Profile" as UC_Me
     }
@@ -100,8 +98,6 @@ rectangle "CI/CD Pipeline Exposure Management System" {
 ' ─────────────────────────────────────────────────────────────
 ' User → Authentication
 ' ─────────────────────────────────────────────────────────────
-User --> UC_Signup
-User --> UC_Login
 User --> UC_Logout
 User --> UC_Me
 

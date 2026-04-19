@@ -1,8 +1,7 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { logoutUser } from '../api';
+import { NavLink } from 'react-router-dom';
 
-const Sidebar = ({ user, onLogout }) => {
+const Sidebar = () => {
   const navItems = [
     { path: '/', name: 'Dashboard' },
     { path: '/scanner', name: 'Pre-built Image Scanner' },
@@ -11,19 +10,6 @@ const Sidebar = ({ user, onLogout }) => {
     { path: '/history', name: 'Scan History' },
     { path: '/scan-lookup', name: 'Scan Lookup' },
   ];
-
-  const displayName = user?.name || user?.email?.split('@')[0] || '';
-  const avatarLetter = displayName ? displayName[0].toUpperCase() : '?';
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } finally {
-      if (onLogout) {
-        onLogout();
-      }
-    }
-  };
 
   return (
     <div className="w-64 h-screen shrink-0 flex flex-col sticky top-0 overflow-hidden" style={{ backgroundColor: '#FFC0CB' }}>
@@ -62,41 +48,6 @@ const Sidebar = ({ user, onLogout }) => {
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
           <span>System Active</span>
         </div>
-
-        {user ? (
-          <div className="mt-3 bg-white/50 border border-pink-300 rounded-lg p-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-pink-600 text-white text-sm font-semibold flex items-center justify-center">
-                {avatarLetter}
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
-                <p className="text-xs text-gray-700 truncate">{user.email}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="mt-3 w-full text-sm px-3 py-1.5 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition"
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link
-              to="/login"
-              className="text-center text-sm px-3 py-1.5 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              className="text-center text-sm px-3 py-1.5 rounded-md bg-white text-gray-900 border border-pink-300 hover:bg-pink-100 transition"
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
       </div>
     </div>
   );
