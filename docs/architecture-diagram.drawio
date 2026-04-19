@@ -1,0 +1,358 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1100" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- ═══════════════════════════════════════════════
+         EXTERNAL ACTORS  (top row)
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="10" value="Developer / User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dfe6e9;strokeColor=#636e72;fontColor=#2d3436;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="60" y="20" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="11" value="GitHub Repository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dfe6e9;strokeColor=#636e72;fontColor=#2d3436;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="280" y="20" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" value="Docker Hub" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dfe6e9;strokeColor=#636e72;fontColor=#2d3436;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="980" y="20" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="13" value="Slack API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dfe6e9;strokeColor=#636e72;fontColor=#2d3436;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1280" y="20" width="160" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="14" value="Trivy Advisory DB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dfe6e9;strokeColor=#636e72;fontColor=#2d3436;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1600" y="20" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         GITHUB ACTIONS CI/CD GROUP
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="20" value="GitHub Actions CI/CD — security-scan.yml" style="swimlane;startSize=35;fillColor=#EBF5FB;strokeColor=#2980b9;fontColor=#1a5276;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="20" y="120" width="540" height="340" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="21" value="1. Checkout Code" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="60" y="50" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="2. Build Backend Image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="60" y="120" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="23" value="3. Build Frontend Image" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="60" y="190" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="24" value="4. Run Trivy Scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="60" y="260" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="25" value="5. Upload Scan Artifacts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="320" y="260" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="26" value="6. Check CRITICAL / HIGH Count" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="320" y="190" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="27" value="7. Generate Step Summary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="320" y="120" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="28" value="Frontend Build Job (parallel)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d6eaf8;strokeColor=#2980b9;fontColor=#1a5276;fontSize=10;" vertex="1" parent="20">
+      <mxGeometry x="320" y="50" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- CI/CD internal edges -->
+    <mxCell id="e20" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="21" target="22" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e21" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="22" target="23" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e22" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="23" target="24" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e23" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="24" target="25" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e24" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="25" target="26" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e25" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;" edge="1" source="26" target="27" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e26" value="parallel job" style="edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;strokeColor=#2980b9;fontSize=9;" edge="1" source="21" target="28" parent="20">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         FRONTEND CONTAINER GROUP
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="30" value="Frontend Container — Port 3000" style="swimlane;startSize=35;fillColor=#EAFAF1;strokeColor=#27ae60;fontColor=#1e8449;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="600" y="120" width="420" height="340" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="31" value="React + Vite SPA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=11;fontStyle=1;" vertex="1" parent="30">
+      <mxGeometry x="130" y="50" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" value="Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="10" y="140" width="130" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="33" value="Remote Image Scanner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="10" y="200" width="130" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="34" value="Local Docker Scanner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="10" y="260" width="130" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="35" value="Scan History" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="280" y="140" width="130" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="36" value="Scan Lookup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="280" y="200" width="130" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="37" value="Vulnerabilities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5f5e3;strokeColor=#27ae60;fontColor=#1e8449;fontSize=10;" vertex="1" parent="30">
+      <mxGeometry x="280" y="260" width="130" height="45" as="geometry"/>
+    </mxCell>
+
+    <!-- Frontend internal edges -->
+    <mxCell id="e30" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="32" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e31" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="33" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e32" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="34" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e33" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="35" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e34" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="36" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e35" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;" edge="1" source="31" target="37" parent="30">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         BACKEND CONTAINER GROUP
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="40" value="Backend Container — Port 8000" style="swimlane;startSize=35;fillColor=#FEF9F0;strokeColor=#e67e22;fontColor=#784212;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="120" width="800" height="580" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="41" value="FastAPI Application (Python 3.11)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=11;fontStyle=1;" vertex="1" parent="40">
+      <mxGeometry x="300" y="50" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- REST Endpoints — left column -->
+    <mxCell id="42" value="POST /scan (remote image)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="140" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="43" value="POST /scan/local (local image)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="200" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="44" value="GET /history" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="260" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="45" value="GET /vulnerabilities" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="320" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="46" value="GET /docker/images" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="380" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="47" value="GET /report/pdf and /report/excel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="440" width="180" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="48" value="GET /events (SSE stream)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="10" y="500" width="180" height="45" as="geometry"/>
+    </mxCell>
+
+    <!-- Backend Modules — right column -->
+    <mxCell id="49" value="Scan Engine — run_trivy_scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;fontStyle=1;" vertex="1" parent="40">
+      <mxGeometry x="610" y="140" width="180" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="50" value="Slack Alert Module" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="610" y="220" width="180" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="51" value="Report Generator (PDF and Excel)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="610" y="295" width="180" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="52" value="Docker Event Monitor (SSE)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="610" y="370" width="180" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="53" value="SQLite Read" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fdebd0;strokeColor=#e67e22;fontColor=#784212;fontSize=10;" vertex="1" parent="40">
+      <mxGeometry x="610" y="445" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Backend internal edges: FastAPI -> endpoints -->
+    <mxCell id="e40" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="42" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e41" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="43" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e42" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="44" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e43" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="45" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e44" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="46" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e45" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="47" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e46" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="41" target="48" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <!-- Endpoints -> modules -->
+    <mxCell id="e47" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="42" target="49" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e48" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="43" target="49" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e49" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="44" target="53" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e50" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="45" target="53" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e51" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="46" target="53" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e52" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="47" target="51" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e53" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;" edge="1" source="48" target="52" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <!-- SCAN_ENGINE -> SLACK_MOD (within BE) -->
+    <mxCell id="e54" value="critical vulns found" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;fontSize=9;" edge="1" source="49" target="50" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <!-- DOCKER_MON -> SCAN_ENGINE (within BE) -->
+    <mxCell id="e55" value="auto-trigger on container start" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;fontSize=9;" edge="1" source="52" target="49" parent="40">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         PERSISTENCE GROUP
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="60" value="Persistence" style="swimlane;startSize=35;fillColor=#FDEDEC;strokeColor=#c0392b;fontColor=#7b241c;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="600" y="490" width="420" height="190" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="61" value="SQLite — vulnerabilities.db" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f9ebea;strokeColor=#c0392b;fontColor=#7b241c;fontSize=10;fontStyle=1;" vertex="1" parent="60">
+      <mxGeometry x="10" y="45" width="140" height="120" as="geometry"/>
+    </mxCell>
+    <mxCell id="62" value="scans table" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f9ebea;strokeColor=#c0392b;fontColor=#7b241c;fontSize=10;" vertex="1" parent="60">
+      <mxGeometry x="200" y="60" width="95" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="63" value="vulnerabilities table" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f9ebea;strokeColor=#c0392b;fontColor=#7b241c;fontSize=10;" vertex="1" parent="60">
+      <mxGeometry x="315" y="60" width="95" height="45" as="geometry"/>
+    </mxCell>
+
+    <!-- Persistence internal edges (no arrow = association) -->
+    <mxCell id="e60" value="" style="html=1;endArrow=none;strokeColor=#c0392b;" edge="1" source="61" target="62" parent="60">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e61" value="" style="html=1;endArrow=none;strokeColor=#c0392b;" edge="1" source="61" target="63" parent="60">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         HOST RESOURCES GROUP
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="70" value="Host Resources" style="swimlane;startSize=35;fillColor=#F5EEF8;strokeColor=#8e44ad;fontColor=#4a235a;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="740" width="800" height="130" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="71" value="Trivy Binary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5eef8;strokeColor=#8e44ad;fontColor=#4a235a;fontSize=10;" vertex="1" parent="70">
+      <mxGeometry x="10" y="45" width="160" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="72" value="Docker Socket (/var/run/docker.sock)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5eef8;strokeColor=#8e44ad;fontColor=#4a235a;fontSize=10;" vertex="1" parent="70">
+      <mxGeometry x="200" y="45" width="185" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="73" value="Named Volume (vulnerability-data)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5eef8;strokeColor=#8e44ad;fontColor=#4a235a;fontSize=10;" vertex="1" parent="70">
+      <mxGeometry x="415" y="45" width="170" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="74" value=".env Config" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5eef8;strokeColor=#8e44ad;fontColor=#4a235a;fontSize=10;" vertex="1" parent="70">
+      <mxGeometry x="615" y="45" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         CROSS-GROUP EDGES
+    ═══════════════════════════════════════════════ -->
+
+    <!-- DEV -> REACT (Browser) -->
+    <mxCell id="e100" value="Browser port 3000" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#27ae60;fontSize=9;" edge="1" source="10" target="31" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- DEV -> GH_REPO -->
+    <mxCell id="e101" value="git push / PR" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#636e72;fontSize=9;" edge="1" source="10" target="11" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- GH_REPO -> GH_CHECKOUT (trigger) -->
+    <mxCell id="e102" value="push / PR / schedule" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#2980b9;fontSize=9;" edge="1" source="11" target="21" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- CI/CD GH_TRIVY -> TRIVYDB -->
+    <mxCell id="e103" value="pull advisories" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#636e72;fontSize=9;" edge="1" source="24" target="14" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- REACT -> FASTAPI -->
+    <mxCell id="e104" value="REST HTTP port 8000 (CORS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#e67e22;fontSize=9;" edge="1" source="31" target="41" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- SCAN_ENGINE -> TRIVY_BIN -->
+    <mxCell id="e105" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8e44ad;" edge="1" source="49" target="71" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- TRIVY_BIN -> DOCKER_SOCK -->
+    <mxCell id="e106" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8e44ad;" edge="1" source="71" target="72" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- DOCKER_SOCK -> DOCKERHUB -->
+    <mxCell id="e107" value="docker pull remote images" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#636e72;fontSize=9;" edge="1" source="72" target="12" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- TRIVY_BIN -> TRIVYDB -->
+    <mxCell id="e108" value="fetch advisories" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#636e72;fontSize=9;" edge="1" source="71" target="14" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- SCAN_ENGINE -> SQLITE (INSERT) -->
+    <mxCell id="e109" value="INSERT scan and vulns" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#c0392b;fontSize=9;" edge="1" source="49" target="61" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- DB_READ -> SQLITE (SELECT) -->
+    <mxCell id="e110" value="SELECT" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#c0392b;fontSize=9;" edge="1" source="53" target="61" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- SLACK_MOD -> SLACK API -->
+    <mxCell id="e111" value="POST alert" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#636e72;fontSize=9;" edge="1" source="50" target="13" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- DOCKER_MON -> DOCKER_SOCK -->
+    <mxCell id="e112" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8e44ad;" edge="1" source="52" target="72" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- FASTAPI -> ENV_CFG -->
+    <mxCell id="e113" value="read on startup" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8e44ad;fontSize=9;" edge="1" source="41" target="74" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- SCAN_ENGINE -> DATA_VOL -->
+    <mxCell id="e114" value="persist db" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8e44ad;fontSize=9;" edge="1" source="49" target="73" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
