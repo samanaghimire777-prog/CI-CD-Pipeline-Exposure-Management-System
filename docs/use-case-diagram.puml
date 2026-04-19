@@ -16,7 +16,7 @@ skinparam PackageBackgroundColor #FDFEFE
 skinparam NoteBackgroundColor #FFFDE7
 skinparam NoteBorderColor #F9A825
 
-title CI/CD Pipeline Exposure Management System\nUse Case Diagram (Updated)
+title CI/CD Pipeline Exposure Management System\nUse Case Diagram
 
 ' ─────────────────────────────────────────────────────────────
 ' Actors
@@ -31,75 +31,63 @@ actor "Slack\n(Notifications)" as Slack
 ' ─────────────────────────────────────────────────────────────
 rectangle "CI/CD Pipeline Exposure Management System" {
 
-    ' ── Authentication ──────────────────────────────────────
-    package "Authentication" {
-        usecase "Log Out"                 as UC_Logout
-        usecase "View Current User\n& Profile" as UC_Me
-    }
-
     ' ── Dashboard ───────────────────────────────────────────
     package "Dashboard" {
-        usecase "View Security Dashboard" as UC_Dashboard
+        usecase "View Security Dashboard"           as UC_Dashboard
         usecase "View Statistics\n& Severity Distribution" as UC_Stats
-        usecase "View Scan Timeline"      as UC_Timeline
+        usecase "View Scan Timeline"                as UC_Timeline
     }
 
     ' ── Pre-built Image Scanner ─────────────────────────────
     package "Pre-built Image Scanner" {
-        usecase "Scan Remote\nDocker Image"             as UC_ScanRemote
-        usecase "Choose from\nPopular Images"           as UC_PopularImages
-        usecase "Receive Critical\nAlert (Email/Slack)" as UC_AlertRemote
-        usecase "Download Report\n(PDF / Excel)"        as UC_ExportRemote
+        usecase "Scan Remote\nDocker Image"         as UC_ScanRemote
+        usecase "Choose from\nPopular Images"       as UC_PopularImages
+        usecase "Receive Critical\nSlack Alert"     as UC_AlertRemote
+        usecase "Download Report\n(PDF / Excel)"    as UC_ExportRemote
     }
 
     ' ── Local Image Scanner ─────────────────────────────────
     package "Local Image Scanner" {
-        usecase "List Local\nDocker Images"             as UC_ListImages
-        usecase "Scan Local\nDocker Image"              as UC_ScanLocal
-        usecase "Enable Auto-Scan\nNew Images"          as UC_AutoScanLocal
-        usecase "Monitor Live Docker\nEvents (SSE)"     as UC_DockerEvents
-        usecase "View Auto-Scan\nHistory"               as UC_AutoScanHistory
-        usecase "Receive Critical\nAlert (Email/Slack)" as UC_AlertLocal
-        usecase "Download Report\n(PDF / Excel)"        as UC_ExportLocal
+        usecase "List Local\nDocker Images"         as UC_ListImages
+        usecase "Scan Local\nDocker Image"          as UC_ScanLocal
+        usecase "Enable Auto-Scan\nNew Images"      as UC_AutoScanLocal
+        usecase "Monitor Live Docker\nEvents (SSE)" as UC_DockerEvents
+        usecase "View Auto-Scan\nHistory"           as UC_AutoScanHistory
+        usecase "Receive Critical\nSlack Alert"     as UC_AlertLocal
+        usecase "Download Report\n(PDF / Excel)"    as UC_ExportLocal
     }
 
     ' ── Vulnerability Analysis (shared) ─────────────────────
     package "Vulnerability Analysis" {
-        usecase "Perform Trivy\nVulnerability Scan"     as UC_Trivy
-        usecase "Parse & Store\nScan Results"           as UC_StoreResults
-        usecase "Tag Scan Source\n(remote / local)"     as UC_ScanSource
+        usecase "Perform Trivy\nVulnerability Scan" as UC_Trivy
+        usecase "Parse & Store\nScan Results"       as UC_StoreResults
+        usecase "Tag Scan Source\n(remote / local)" as UC_ScanSource
     }
 
-    ' ── Alerts (shared) ─────────────────────────────────────
+    ' ── Alerting (shared) ───────────────────────────────────
     package "Alerting" {
         usecase "Send Slack Alert\n(Webhook)"           as UC_SlackWebhook
-        usecase "Send Slack Alert\n(Bot Token fallback)"as UC_SlackBot
+        usecase "Send Slack Alert\n(Bot Token fallback)" as UC_SlackBot
     }
 
     ' ── Results & Reporting ─────────────────────────────────
     package "Results & Reporting" {
-        usecase "View All\nVulnerabilities"             as UC_Results
-        usecase "Filter by Severity"                    as UC_Filter
-        usecase "View Scan History"                     as UC_History
-        usecase "Lookup Scan by ID"                     as UC_Lookup
-        usecase "Download Report\n(PDF / Excel)"        as UC_ExportLookup
+        usecase "View All\nVulnerabilities"         as UC_Results
+        usecase "Filter by Severity"                as UC_Filter
+        usecase "View Scan History"                 as UC_History
+        usecase "Lookup Scan by ID"                 as UC_Lookup
+        usecase "Download Report\n(PDF / Excel)"    as UC_ExportLookup
     }
 
     ' ── CI/CD Automation ────────────────────────────────────
     package "CI/CD Automation" {
-        usecase "Trigger Automated\nSecurity Scan"      as UC_AutoScan
-        usecase "Build & Push\nDocker Images"           as UC_Build
-        usecase "Store Scan\nArtifacts"                 as UC_Artifacts
-        usecase "Detect Critical\nVulnerabilities"      as UC_Detect
+        usecase "Trigger Automated\nSecurity Scan"  as UC_AutoScan
+        usecase "Build & Push\nDocker Images"       as UC_Build
+        usecase "Store Scan\nArtifacts"             as UC_Artifacts
+        usecase "Detect Critical\nVulnerabilities"  as UC_Detect
     }
 
 }
-
-' ─────────────────────────────────────────────────────────────
-' User → Authentication
-' ─────────────────────────────────────────────────────────────
-User --> UC_Logout
-User --> UC_Me
 
 ' ─────────────────────────────────────────────────────────────
 ' User → Dashboard
@@ -142,39 +130,39 @@ CICD --> UC_Artifacts
 CICD --> UC_Detect
 
 ' ─────────────────────────────────────────────────────────────
-' Trivy invocation (<<include>>)
+' Trivy invocation
 ' ─────────────────────────────────────────────────────────────
-UC_ScanRemote  ..> UC_Trivy       : <<include>>
-UC_ScanLocal   ..> UC_Trivy       : <<include>>
-UC_AutoScan    ..> UC_Trivy       : <<include>>
+UC_ScanRemote    ..> UC_Trivy    : <<include>>
+UC_ScanLocal     ..> UC_Trivy   : <<include>>
+UC_AutoScan      ..> UC_Trivy   : <<include>>
 UC_AutoScanLocal ..> UC_ScanLocal : <<include>>
 Trivy --> UC_Trivy
 
 ' ─────────────────────────────────────────────────────────────
 ' Trivy results stored & tagged
 ' ─────────────────────────────────────────────────────────────
-UC_Trivy       ..> UC_StoreResults : <<include>>
-UC_StoreResults ..> UC_ScanSource  : <<include>>
+UC_Trivy        ..> UC_StoreResults : <<include>>
+UC_StoreResults ..> UC_ScanSource   : <<include>>
 
 ' ─────────────────────────────────────────────────────────────
-' Alerts on critical findings (<<extend>>)
+' Alerts on critical findings
 ' ─────────────────────────────────────────────────────────────
-UC_ScanRemote   ..> UC_AlertRemote : <<extend>>\n[critical found]
-UC_ScanLocal    ..> UC_AlertLocal  : <<extend>>\n[critical found]
-UC_AutoScan     ..> UC_Detect      : <<include>>
-UC_Detect       ..> UC_AlertRemote : <<extend>>\n[critical found]
+UC_ScanRemote ..> UC_AlertRemote : <<extend>>
+UC_ScanLocal  ..> UC_AlertLocal  : <<extend>>
+UC_AutoScan   ..> UC_Detect      : <<include>>
+UC_Detect     ..> UC_AlertRemote : <<extend>>
 
 UC_AlertRemote  ..> UC_SlackWebhook : <<include>>
 UC_AlertLocal   ..> UC_SlackWebhook : <<include>>
-UC_SlackWebhook ..> UC_SlackBot     : <<extend>>\n[webhook fails]
+UC_SlackWebhook ..> UC_SlackBot     : <<extend>>
 Slack --> UC_SlackWebhook
 Slack --> UC_SlackBot
 
 ' ─────────────────────────────────────────────────────────────
 ' Docker Live Events (SSE)
 ' ─────────────────────────────────────────────────────────────
-UC_DockerEvents ..> UC_ListImages   : <<include>>
 UC_AutoScanLocal ..> UC_DockerEvents : <<include>>
+UC_DockerEvents  ..> UC_ListImages   : <<include>>
 
 ' ─────────────────────────────────────────────────────────────
 ' Filter extends Results
@@ -185,14 +173,14 @@ UC_Results ..> UC_Filter : <<extend>>
 ' Notes
 ' ─────────────────────────────────────────────────────────────
 note right of UC_ScanRemote
-  "Pre-built Image Scanner" page.
+  Pre-built Image Scanner page.
   Accepts any registry image
   (e.g. nginx:latest, python:3.11).
   Popular images shortcut available.
 end note
 
 note right of UC_ScanLocal
-  "Local Image Scanner" page.
+  Local Image Scanner page.
   Scans images already present
   on the local Docker daemon.
   Scan source tagged as 'local'.
