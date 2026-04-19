@@ -1,0 +1,63 @@
+flowchart TD
+
+    %% ── STEP 1: Start ──────────────────────────────────────────────
+    A([🚀 You want to check\nif a Docker image is safe])
+    A --> B[Open the Security Dashboard\nin your web browser]
+
+    %% ── STEP 2: Pick what to scan ──────────────────────────────────
+    B --> C{Which image\ndo you want to scan?}
+    C -->|Type an image name\ne.g. nginx or ubuntu| D[Type the image name\nand press Scan]
+    C -->|Pick from the list\nof images on your computer| E[Select a local image\nfrom the dropdown]
+
+    %% ── STEP 3: The system checks the image ────────────────────────
+    D --> F[The system fetches\nthe image from the internet\nif not already downloaded]
+    E --> F
+    F --> G[Trivy security tool\nscans every file inside\nthe image for known problems]
+
+    %% ── STEP 4: Were any problems found? ───────────────────────────
+    G --> H{Were any security\nproblems found?}
+
+    %% ── STEP 4a: No problems ────────────────────────────────────────
+    H -->|No problems found| I[✅ Great news!\nThe image looks safe]
+    I --> J[Results are saved\nso you can look back\nat them later]
+
+    %% ── STEP 4b: Problems found ─────────────────────────────────────
+    H -->|Yes, problems found| K[Problems are sorted\nby how dangerous they are]
+
+    K --> L{How serious\nare they?}
+    L -->|🔴 CRITICAL or 🟠 HIGH| M[⚠️ A Slack alert is sent\nto the security team\nright away]
+    L -->|🟡 MEDIUM or 🔵 LOW| N[Problems are logged\nfor review later]
+
+    M --> O[Results are saved\nto the database]
+    N --> O
+
+    %% ── STEP 5: View the results on screen ─────────────────────────
+    J --> P[Dashboard shows\na summary of the scan]
+    O --> P
+
+    P --> Q[You can see:\n• Total problems found\n• A chart by severity\n• A history of all scans]
+
+    %% ── STEP 6: Download a report ───────────────────────────────────
+    Q --> R{Do you need\na report to share?}
+    R -->|Yes, as PDF| S[📄 Download PDF report]
+    R -->|Yes, as Excel| T[📊 Download Excel report]
+    R -->|No, just browsing| U([✔️ Done — stay on dashboard])
+
+    S --> U
+    T --> U
+
+    %% ── STEP 7: Automatic daily scan ───────────────────────────────
+    V([🕑 Every day at 2 AM\nGitHub Actions runs automatically])
+    V --> W[It scans the project's\nown Docker image]
+    W --> X{Any CRITICAL\nproblems found?}
+    X -->|Yes| Y[🚨 GitHub Actions\nflags the build as failed\nand notifies the team]
+    X -->|No| Z[✅ Build passes\nAll clear for today]
+
+    %% ── Styling ─────────────────────────────────────────────────────
+    style A fill:#4CAF50,color:#fff,stroke:#388E3C
+    style I fill:#4CAF50,color:#fff,stroke:#388E3C
+    style U fill:#4CAF50,color:#fff,stroke:#388E3C
+    style Z fill:#4CAF50,color:#fff,stroke:#388E3C
+    style M fill:#FF5722,color:#fff,stroke:#BF360C
+    style Y fill:#FF5722,color:#fff,stroke:#BF360C
+    style V fill:#1976D2,color:#fff,stroke:#0D47A1
