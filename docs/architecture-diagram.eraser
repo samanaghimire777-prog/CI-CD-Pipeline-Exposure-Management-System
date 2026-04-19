@@ -1,0 +1,102 @@
+// ============================================================
+// CI/CD Pipeline Exposure Management System
+// System Architecture Diagram
+// Paste into https://eraser.io → New Diagram → Cloud Architecture
+// ============================================================
+
+title CI/CD Pipeline Exposure Management System - Architecture
+
+direction right
+colorMode pastel
+
+// ─── External Actors ─────────────────────────────────────────
+Developer [icon: user, label: "Developer / User\n(Browser)"]
+GitHubRepo [icon: github, label: "GitHub Repository"]
+DockerHub [icon: docker, label: "Docker Hub\n(Remote Registry)"]
+SlackAPI [icon: slack, label: "Slack API\n(Webhook / Bot Token)"]
+TrivyDB [icon: database, label: "Trivy Advisory DB\n(ghcr.io)"]
+
+// ─── GitHub Actions CI/CD Pipeline ───────────────────────────
+CICD [icon: github, label: "GitHub Actions CI/CD\n(security-scan.yml)"] {
+  GH_Checkout [icon: git-branch, label: "Checkout Code\n(actions/checkout@v4)"]
+  GH_BuildBackend [icon: docker, label: "Build Backend Image\nsecurity-dashboard-backend:SHA"]
+  GH_BuildFrontend [icon: docker, label: "Build Frontend Image\nsecurity-dashboard-frontend:SHA"]
+  GH_Trivy [icon: shield, label: "Install & Run Trivy\n(JSON + Table output)"]
+  GH_Artifacts [icon: file, label: "Upload Artifacts\n(trivy-*-results.json\nretention: 30 days)"]
+  GH_VulnCheck [icon: alert-triangle, label: "Vulnerability Count Check\n(CRITICAL / HIGH threshold)"]
+  GH_Summary [icon: clipboard, label: "Generate Step Summary\n(GitHub Actions UI)"]
+  GH_NodeBuild [icon: package, label: "npm ci + npm run build\n(frontend/dist artifact)"]
+}
+
+// ─── Docker Compose Host ─────────────────────────────────────
+DockerHost [icon: server, label: "Docker Compose Host"] {
+
+  // Frontend container
+  FrontendContainer [icon: monitor, label: "Frontend Container\nReact + Vite  •  Port 3000"] {
+    Dashboard [icon: layout, label: "Dashboard\n(Stats, Charts)"]
+    Scanner [icon: search, label: "Remote Image Scanner"]
+    LocalScanner [icon: hard-drive, label: "Local Docker Scanner"]
+    ScanHistory [icon: clock, label: "Scan History"]
+    ScanLookup [icon: zoom-in, label: "Scan Lookup"]
+    VulnPage [icon: alert-triangle, label: "Vulnerabilities Page"]
+  }
+
+  // Backend container
+  BackendContainer [icon: cpu, label: "Backend Container\nFastAPI (Python 3.11)  •  Port 8000"] {
+    RestAPI [icon: globe, label: "REST API Endpoints\nPOST /scan\nPOST /scan/local\nGET  /history\nGET  /vulnerabilities\nGET  /report/pdf\nGET  /report/excel\nGET  /docker/images\nGET  /events (SSE)"]
+    ScanEngine [icon: shield, label: "Scan Engine\nrun_trivy_scan()\n(subprocess + retry logic)"]
+    SlackAlert [icon: bell, label: "Slack Alert Module\nPrimary: Incoming Webhook\nFallback: Bot Token +\nchat.postMessage"]
+    ReportGen [icon: file-text, label: "Report Generator\nPDF  via ReportLab\nExcel via openpyxl"]
+    DockerEventMonitor [icon: activity, label: "Docker Event Monitor\nSSE auto-scan loop\n(start / die events)"]
+  }
+
+  // Persistence
+  SQLiteDB [icon: database, label: "SQLite Database\nvulnerabilities.db  (WAL mode)"] {
+    ScansTable [icon: table, label: "scans\n(id, image_name, scan_date,\nscan_source, total, critical,\nhigh, medium, low)"]
+    VulnTable [icon: table, label: "vulnerabilities\n(id, scan_id, package_name,\ninstalled_version, fixed_version,\nvulnerability_id, severity, description)"]
+  }
+
+  // Host-level resources
+  TrivyBinary [icon: shield-check, label: "Trivy Binary\n(installed in backend container)\n--skip-db-update fast path\n+ fallback full-update retry"]
+  DockerSocket [icon: zap, label: "Docker Socket\n/var/run/docker.sock\n(bind-mounted into backend)"]
+  DataVolume [icon: hard-drive, label: "Named Volume\nvulnerability-data\n(/app/data)"]
+  EnvConfig [icon: settings, label: ".env Config\nDATABASE_PATH\nTRIVY_TIMEOUT\nSLACK_WEBHOOK_URL\nSLACK_BOT_TOKEN\nSLACK_CHANNEL_ID"]
+}
+
+// ─── Connections ─────────────────────────────────────────────
+
+// Developer
+Developer > FrontendContainer: "Browser  :3000"
+Developer > GitHubRepo: "git push / pull request"
+
+// GitHub Actions trigger
+GitHubRepo > GH_Checkout: "push (main/develop)\nor pull_request\nor schedule (daily 2 AM UTC)\nor workflow_dispatch"
+
+// CI pipeline flow
+GH_Checkout > GH_BuildBackend
+GH_BuildBackend > GH_BuildFrontend
+GH_BuildFrontend > GH_Trivy
+GH_Trivy > TrivyDB: "pull advisory DB"
+GH_Trivy > GH_Artifacts: "trivy-backend-results.json\ntrivy-frontend-results.json"
+GH_Artifacts > GH_VulnCheck: "jq count CRITICAL / HIGH"
+GH_VulnCheck > GH_Summary: "GITHUB_STEP_SUMMARY table"
+GH_Checkout > GH_NodeBuild: "frontend-build job (parallel)"
+
+// Frontend ↔ Backend
+FrontendContainer > RestAPI: "REST API  HTTP :8000\n(CORS allowed)"
+
+// Backend internal flow
+RestAPI > ScanEngine: "scan request (image name)"
+ScanEngine > TrivyBinary: "subprocess call"
+TrivyBinary > DockerSocket: "docker pull / image inspect\n(local resolve)"
+DockerSocket > DockerHub: "docker pull\n(remote image, if not cached)"
+TrivyBinary > TrivyDB: "fetch / update advisories"
+ScanEngine > SQLiteDB: "INSERT scan + vulnerabilities"
+RestAPI > SQLiteDB: "SELECT history / details"
+RestAPI > SlackAlert: "triggered on CRITICAL vulns"
+SlackAlert > SlackAPI: "POST webhook URL\nor Bearer bot token"
+RestAPI > ReportGen: "generate on demand"
+DockerEventMonitor > DockerSocket: "listen for container events"
+DockerEventMonitor > ScanEngine: "auto-trigger scan on image start"
+BackendContainer > DataVolume: "persist SQLite db"
+BackendContainer > EnvConfig: "read at startup (python-dotenv)"
