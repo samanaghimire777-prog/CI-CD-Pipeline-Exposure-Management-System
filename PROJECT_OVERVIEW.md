@@ -103,40 +103,28 @@ A full-stack security vulnerability scanning dashboard that integrates Trivy for
 ## 3.3 Sprint-Wise Development Summary
 
 ### 3.3.1 Sprint 1: Foundation & Planning
-- Defined the project scope for a CI/CD Security Dashboard.
-- Finalized core technologies: GitHub Actions, Trivy, FastAPI, React, Docker, and SQLite.
-- Prepared high-level system design artifacts (use case and component-level architecture).
-- Established the implementation roadmap and sprint-level task breakdown.
+
+The first sprint was dedicated to establishing a solid foundation for the CI/CD Security Dashboard project. The team began by carefully defining the project scope, identifying the core problem of undetected container vulnerabilities in automated delivery pipelines, and agreeing on the key stakeholders and functional requirements. After a thorough evaluation of available tools and frameworks, the technology stack was finalised: GitHub Actions for CI/CD orchestration, Trivy for container image vulnerability scanning, FastAPI as the backend framework, React with TailwindCSS for the frontend dashboard, Docker and Docker Compose for containerisation, and SQLite for lightweight persistent storage. System design artifacts were produced during this sprint, including a component diagram that mapped the interactions between the CI pipeline, backend API, database, and frontend UI, alongside a use case diagram illustrating the primary actor workflows. The sprint concluded with a documented implementation roadmap and a task breakdown that gave each subsequent sprint clear boundaries and measurable goals.
 
 ### 3.3.2 Sprint 2: CI/CD Pipeline Setup
-- Implemented the initial GitHub Actions workflow for automated pipeline execution on repository events.
-- Added build automation for backend and frontend Docker images.
-- Integrated Trivy scanning in the CI flow.
-- Enforced security gates so builds fail when HIGH or CRITICAL vulnerabilities are detected.
+
+With the project scope and architecture defined, Sprint 2 focused entirely on building and validating the automated CI/CD pipeline using GitHub Actions. A workflow file was created that triggers automatically on every push to the repository, ensuring continuous integration from day one. The pipeline was structured to check out the latest source code, build Docker images for both the backend and frontend services, and then execute a Trivy security scan against the resulting images. A critical design decision made during this sprint was the enforcement of a security threshold: the pipeline is configured to fail immediately if any vulnerability rated CRITICAL or HIGH is discovered, thereby preventing unsafe builds from progressing further in the delivery cycle. The workflow also stores Trivy scan results as build artifacts and generates a human-readable summary within the GitHub Actions interface, giving developers immediate visibility into the security state of every commit. This sprint represented the first working integration of security scanning into the automated delivery process.
 
 ### 3.3.3 Sprint 3: Backend Intelligence
-- Developed the FastAPI backend and core REST endpoints.
-- Implemented parsing and processing logic for Trivy vulnerability data.
-- Structured outputs around severity distribution, affected packages, versions, and remediation details.
-- Added stable data handling with SQLite-backed scan and vulnerability records.
+
+Sprint 3 shifted focus to the server-side application, where the FastAPI-based backend was designed and implemented in full. The backend serves as the intelligence layer of the system, responsible for invoking Trivy against a specified Docker image, receiving the raw JSON scan output, and parsing it into structured vulnerability records. Parsing logic was developed to extract and normalise all relevant fields from the Trivy report, including the vulnerability identifier (CVE ID), the affected package name, the installed and fixed versions, the severity rating, and a human-readable description. Parsed records are persisted into an SQLite database using two tables: one for scan metadata and one for individual vulnerability entries linked by a foreign key. Five RESTful API endpoints were exposed — a health check, a scan trigger, a filtered vulnerability retrieval endpoint, a scan history endpoint, and a statistics aggregation endpoint — each returning consistent JSON responses. CORS middleware was also configured to allow secure cross-origin communication with the React frontend. The result was a fully tested, stable data processing backend ready to serve any client.
 
 ### 3.3.4 Sprint 4: Frontend Visualization
-- Built the React dashboard UI and integrated reusable components.
-- Added vulnerability tables, severity indicators, statistics cards, and chart-based visualizations.
-- Implemented filtering and pagination to improve usability.
-- Ensured a responsive interface for rapid security posture review.
+
+Building on the completed backend, Sprint 4 was focused on delivering a polished and interactive frontend dashboard using React and TailwindCSS. The dashboard was designed to give security engineers and developers an intuitive view of vulnerability data without requiring them to interpret raw API responses directly. Five core React components were developed: a scan form that accepts a Docker image name and triggers a scan via the API; statistics cards that display totals for each severity level and double as interactive filters; a bar chart rendering the severity distribution using Chart.js; a line chart tracking vulnerability counts across multiple scans over time; and a paginated vulnerability table with colour-coded severity badges showing package-level detail. The UI was built to refresh its data automatically every thirty seconds, ensuring that results displayed are always current without requiring a manual page reload. Responsive design principles were applied throughout, ensuring the dashboard remains accessible on both desktop and smaller screens. By the end of this sprint the frontend was fully functional as a standalone interface backed by the completed API.
 
 ### 3.3.5 Sprint 5: Integration & Testing
-- Connected frontend views with backend APIs for end-to-end scan visibility.
-- Verified full workflow: scan trigger, data persistence, retrieval, and visualization.
-- Added scan-history views and severity-based exploration across dashboard sections.
-- Improved operational reliability with clearer pipeline outcomes and artifact-based reporting.
+
+Sprint 5 brought together all previously developed components into a fully integrated, end-to-end system. The frontend was connected to the live backend API and tested across all user flows: initiating a scan from the dashboard, waiting for the result, and observing the vulnerability table, charts, and statistics cards update with the newly ingested data. The scan history page was completed and verified to accurately reflect the chronological record of all scans stored in the database. Severity-based filtering was validated to correctly narrow the vulnerability table to the selected severity tier. Cross-component behaviour was tested, including the interaction between clicking a severity card and the corresponding filter being applied to the vulnerability table. Error handling was reviewed and refined so that API failures surface as informative UI messages rather than silent or broken states. The GitHub Actions workflow was also retested against updated images to confirm the security gate behaved correctly under both passing and failing conditions. The sprint delivered a fully functional, integrated system ready for demonstration and evaluation.
 
 ### 3.3.6 Evaluation and Documentation
-- Evaluated the complete system against sprint goals and interim project requirements.
-- Confirmed successful delivery of CI automation, vulnerability scanning, backend APIs, and frontend analytics.
-- Consolidated setup, usage, architecture, and development guidance into project documentation.
-- Prepared the project baseline for future enhancements such as notifications, authentication, and advanced reporting.
+
+The final phase of the project was devoted to systematic evaluation of the delivered system against the original requirements and a comprehensive consolidation of all project documentation. Each sprint goal was reviewed against the implemented functionality, confirming that the CI/CD pipeline correctly automates security scanning, the backend accurately parses and stores Trivy output, the frontend presents vulnerability data in a clear and navigable interface, and the system operates as a coherent end-to-end solution. The evaluation also identified known limitations and future improvement opportunities, including the absence of user authentication, the use of SQLite rather than a production-grade database, the lack of email or messaging notifications for critical findings, and the scope for exporting scan reports to PDF or CSV formats. On the documentation side, a comprehensive README was written covering installation, configuration, usage instructions, and API reference. A quick-start guide, a developer guide, a project overview, and environment configuration templates were also produced, ensuring that any new contributor can set up, run, and extend the project with minimal friction. The documentation baseline positions the project for continued development and aligns it with the standards expected for a final-year academic submission.
 
 ## Key Features Implemented
 
