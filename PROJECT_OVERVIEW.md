@@ -100,6 +100,44 @@ A full-stack security vulnerability scanning dashboard that integrates Trivy for
 ✅ GitHub Actions CI/CD pipeline  
 ✅ Comprehensive documentation  
 
+## 3.3 Sprint-Wise Development Summary
+
+### 3.3.1 Sprint 1: Foundation & Planning
+- Defined the project scope for a CI/CD Security Dashboard.
+- Finalized core technologies: GitHub Actions, Trivy, FastAPI, React, Docker, and SQLite.
+- Prepared high-level system design artifacts (use case and component-level architecture).
+- Established the implementation roadmap and sprint-level task breakdown.
+
+### 3.3.2 Sprint 2: CI/CD Pipeline Setup
+- Implemented the initial GitHub Actions workflow for automated pipeline execution on repository events.
+- Added build automation for backend and frontend Docker images.
+- Integrated Trivy scanning in the CI flow.
+- Enforced security gates so builds fail when HIGH or CRITICAL vulnerabilities are detected.
+
+### 3.3.3 Sprint 3: Backend Intelligence
+- Developed the FastAPI backend and core REST endpoints.
+- Implemented parsing and processing logic for Trivy vulnerability data.
+- Structured outputs around severity distribution, affected packages, versions, and remediation details.
+- Added stable data handling with SQLite-backed scan and vulnerability records.
+
+### 3.3.4 Sprint 4: Frontend Visualization
+- Built the React dashboard UI and integrated reusable components.
+- Added vulnerability tables, severity indicators, statistics cards, and chart-based visualizations.
+- Implemented filtering and pagination to improve usability.
+- Ensured a responsive interface for rapid security posture review.
+
+### 3.3.5 Sprint 5: Integration & Testing
+- Connected frontend views with backend APIs for end-to-end scan visibility.
+- Verified full workflow: scan trigger, data persistence, retrieval, and visualization.
+- Added scan-history views and severity-based exploration across dashboard sections.
+- Improved operational reliability with clearer pipeline outcomes and artifact-based reporting.
+
+### 3.3.6 Evaluation and Documentation
+- Evaluated the complete system against sprint goals and interim project requirements.
+- Confirmed successful delivery of CI automation, vulnerability scanning, backend APIs, and frontend analytics.
+- Consolidated setup, usage, architecture, and development guidance into project documentation.
+- Prepared the project baseline for future enhancements such as notifications, authentication, and advanced reporting.
+
 ## Key Features Implemented
 
 ### Security Scanning
