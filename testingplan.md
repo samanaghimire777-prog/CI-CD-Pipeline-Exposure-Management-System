@@ -10,6 +10,24 @@
 
 > Unit tests validate individual functions and modules in isolation (backend logic, API helpers, database operations).
 
+### Unit Testing Summary Table
+
+| Test Case | Objective | Action | Expected Test Result | Actual Test Result | Conclusion |
+|-----------|-----------|--------|----------------------|--------------------|------------|
+| **UT-01** Health Check Returns 200 | Verify `GET /` returns HTTP 200 OK. | Send `GET http://localhost:8000/`. | HTTP `200` with a JSON body confirming service is running. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-02** DB Initialisation Creates Tables | Verify `init_db()` creates `scans` and `vulnerabilities` tables. | Call `init_db()` on a fresh in-memory SQLite DB; query `sqlite_master`. | Both tables exist after `init_db()` completes. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-03** Schema Migration Adds `scan_source` | Verify migration adds `scan_source` column when absent. | Create `scans` table without `scan_source`, run `init_db()`, inspect `PRAGMA table_info(scans)`. | `scan_source` column present with default `'remote'`. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-04** Password Hashing | Verify `pwd_context.hash()` returns a valid hash and `verify()` works. | Hash `"TestPass123!"` and verify against correct and incorrect passwords. | Correct password returns `True`; wrong password returns `False`. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-05** Scan Rejects Empty Image Name | Verify blank `image_name` returns a validation error. | Send `POST /scan` with `{"image_name": ""}`. | HTTP `422 Unprocessable Entity`. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-06** Severity Filter Returns Matching Records | Verify `?severity=CRITICAL` filters results correctly. | Pre-populate DB with mixed severities; call `GET /results?severity=CRITICAL`. | Only `CRITICAL` rows returned; no `HIGH` or `LOW` records. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-07** Scan History in Descending Order | Verify `/scans` returns history newest-first. | Insert two scan records with different timestamps; call `GET /scans`. | Scan with later timestamp appears first. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-08** Stats Aggregates Severity Counts | Verify `/stats` computes correct severity totals. | Insert known counts (3 CRITICAL, 5 HIGH); call `GET /stats`. | Response contains `critical_count: 3` and `high_count: 5`. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-09** 404 for Non-Existent Scan | Verify `/scans/{id}` returns 404 for unknown ID. | Call `GET /scans/99999` on a DB with no such record. | HTTP `404 Not Found` with an error message. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-10** Docker Images List | Verify `/docker/images` returns local image names. | Call `GET /docker/images` with at least one image present locally. | JSON array containing at least one image name string. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-11** Signup Creates New User | Verify `POST /auth/signup` creates a user and returns a token. | Send `POST /auth/signup` with valid email and password. | HTTP `200` with non-empty `token` field in response. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-12** Login Rejects Invalid Credentials | Verify `POST /auth/login` returns 401 for wrong password. | Send `POST /auth/login` with valid email but wrong password. | HTTP `401 Unauthorized`. | *(to be filled in)* | *(Pass / Fail)* |
+| **UT-13** PDF Report Content-Type | Verify report endpoint returns correct MIME type for PDF. | Insert a scan record; call `GET /reports/scan/1?format=pdf`. | HTTP `200` with `Content-Type: application/pdf` and non-empty body. | *(to be filled in)* | *(Pass / Fail)* |
+
 ---
 
 ### UT-01 — Health Check Endpoint Returns 200
@@ -171,6 +189,24 @@
 ## System Testing
 
 > System tests validate end-to-end behaviour of the full application stack (frontend + backend + database + Trivy scanner).
+
+### System Testing Summary Table
+
+| Test Case | Objective | Action | Expected Test Result | Actual Test Result | Conclusion |
+|-----------|-----------|--------|----------------------|--------------------|------------|
+| **ST-01** Full Stack Starts Without Errors | Verify all Docker services start cleanly. | Run `docker-compose up --build`; observe logs for 60 seconds. | All containers running; no `ERROR` or `FATAL` in startup logs. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-02** End-to-End Remote Image Scan via UI | Verify a user can scan a remote image and see results on the dashboard. | Open `http://localhost:3000`, enter `alpine:latest`, click **Scan**. | Dashboard updates with vulnerability counts for `alpine:latest` within 120 s. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-03** Scan Results Persist Across Restart | Verify SQLite data survives a backend container restart. | Scan via `POST /scan`, restart backend, call `GET /scans`. | Previously scanned image record still present after restart. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-04** Dashboard Auto-Refresh Every 30 s | Verify the frontend re-fetches data automatically every 30 seconds. | Keep dashboard open, trigger a new scan via API, do not reload the page. | New scan result appears on the dashboard within 30 seconds. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-05** Severity Filter Shows Correct Subset | Verify the frontend filter shows only the selected severity. | Scan an image with mixed severities; select **CRITICAL** in the filter. | Only CRITICAL vulnerabilities shown; other severities hidden. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-06** Pagination Through Vulnerability Table | Verify the table paginates correctly with more than 10 results. | Scan an image with >10 vulnerabilities; navigate to page 2 in the UI. | Page 2 shows items 11–20 without repeating page 1 items. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-07** User Registration and Authenticated Access | Verify sign-up → login → protected dashboard access works end-to-end. | Register a new account, log in, then view the dashboard. | Dashboard loads after login; unauthenticated routes redirect to login. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-08** GitHub Actions CI Pipeline on Push | Verify a push to `main` triggers the workflow and it succeeds. | Push a minor commit to `main`; observe the **security-scan** workflow. | Workflow completes with green status; scan summary artifact stored. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-09** PDF Report Download from UI | Verify a PDF vulnerability report can be downloaded from the UI. | Complete a scan, click **Download PDF** on the scan history entry. | A valid PDF file is downloaded containing scan ID, image name, and vulnerability table. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-10** Excel Report Download from UI | Verify an Excel report can be downloaded from the UI. | Complete a scan, click **Download Excel** on the scan history entry. | A valid `.xlsx` file is downloaded with formatted vulnerability data and severity colour coding. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-11** CORS Blocks Unauthorised Origins | Verify the backend rejects API calls from unlisted origins. | Send `GET /stats` with `Origin: http://evil.example.com` via curl. | Response lacks `Access-Control-Allow-Origin` for the disallowed origin; browser blocks it. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-12** Local Docker Image Scan via UI | Verify a locally built image can be scanned through the UI. | Build `test-app:latest` locally, select it in the local images dropdown, start scan. | Scan completes; `test-app:latest` appears in scan history with correct vulnerability counts. | *(to be filled in)* | *(Pass / Fail)* |
+| **ST-13** Scheduled CI Scan Stores Artifacts | Verify the scheduled workflow triggers and uploads a scan summary artifact. | Trigger the workflow via **workflow_dispatch** in GitHub Actions; inspect the artifacts tab. | Workflow succeeds; scan summary artifact visible and retained for ≥ 30 days. | *(to be filled in)* | *(Pass / Fail)* |
 
 ---
 
